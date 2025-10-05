@@ -1,5 +1,5 @@
 {
-  "name": "Motorcycle Parts Store",
+  "name": "Motorcycle Parts Store good",
   "description": "A simple e-commerce web application for a motorcycle parts store, built with React and designed to integrate with a Google Apps Script backend. It features product browsing, filtering, a shopping cart, and an order confirmation process, with full support for Arabic (RTL) layout.",
   "requestFramePermissions": []
 }

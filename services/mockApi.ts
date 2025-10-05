@@ -44,16 +44,42 @@ const mockPastOrders: ConfirmedOrder[] = [
 ];
 
 
-// Simulates fetching products from a Google Sheet
-export const fetchProducts = (): Promise<Product[]> => {
-  console.log('Mock API: Fetching products...');
-  return new Promise(resolve => {
-    setTimeout(() => {
-      console.log('Mock API: Products fetched successfully.');
-      resolve(mockProducts);
-    }, 1000); // 1-second delay to simulate network
-  });
+// Fetches products from a Google Sheet Web App
+export const fetchProducts = async (): Promise<Product[]> => {
+  const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwQp95Xkwvzlu1a4NQpmPU5YO91m0IN0xLv1Ue_SVpKajbgm87ilInmAzZbdOMNn9i2/exec';
+
+  console.log('API: Fetching products from Google Sheet...');
+  
+  try {
+    const response = await fetch(GOOGLE_SHEET_API_URL);
+    if (!response.ok) {
+      throw new Error(`Network response was not ok: ${response.statusText}`);
+    }
+    const data = await response.json();
+    console.log('API: Products fetched successfully.');
+    
+    // Ensure data is an array and fields have correct types, as Google Sheets can be inconsistent.
+    if (!Array.isArray(data)) {
+        console.error("API Error: Expected an array of products but received:", data);
+        return [];
+    }
+
+    return data.map((p: any) => ({
+        id: Number(p.id),
+        name: String(p.name || ''),
+        price: Number(p.price),
+        image: String(p.image || ''),
+        category: String(p.category || 'غير مصنف'),
+        piecesPerCarton: p.piecesPerCarton ? Number(p.piecesPerCarton) : undefined,
+        sku: p.sku ? String(p.sku) : undefined,
+    })).filter(p => p.id && p.name && p.price > 0); // Filter out any invalid or empty rows from the sheet
+  } catch (error) {
+    console.error("Error fetching products from Google Sheet:", error);
+    // Fallback to an empty array to prevent the app from crashing.
+    return []; 
+  }
 };
+
 
 // Simulates confirming an order and saving to a sheet.
 export const confirmOrder = (orderDetails: OrderDetails): Promise<{ success: boolean; message: string; order: ConfirmedOrder }> => {
