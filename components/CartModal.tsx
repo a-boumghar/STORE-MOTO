@@ -92,7 +92,7 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
 
     const itemsHtml = printData.items.map(item => `
         <tr>
-            <td>${item.name}</td>
+            <td>${item.name}${item.sku ? `<br><span style="font-size: 0.75rem; color: #64748b;">SKU: ${item.sku}</span>` : ''}</td>
             <td>${item.quantity}</td>
             <td>${item.price.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)}</td>
             <td>${(item.price * item.quantity).toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)}</td>
@@ -282,7 +282,7 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
 الهاتف: ${confirmedOrder.phone}
 ---
 المنتجات:
-${confirmedOrder.items.map(item => `- ${item.name} (x${item.quantity})`).join('\n')}
+${confirmedOrder.items.map(item => `- ${item.name}${item.sku ? ` (SKU: ${item.sku})` : ''} (x${item.quantity})`).join('\n')}
 ---
 الإجمالي: ${confirmedOrder.total.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)} درهم
 شكراً لتعاملكم معنا!
@@ -305,7 +305,7 @@ ${confirmedOrder.items.map(item => `- ${item.name} (x${item.quantity})`).join('\
 
     const itemsHtml = printData.items.map(item => `
         <tr>
-            <td>${item.name}</td>
+            <td>${item.name}${item.sku ? `<br><span style="font-size: 0.75rem; color: #64748b;">SKU: ${item.sku}</span>` : ''}</td>
             <td>${item.quantity}</td>
             <td>${item.price.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)}</td>
             <td>${(item.price * item.quantity).toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)}</td>
