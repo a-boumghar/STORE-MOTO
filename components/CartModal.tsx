@@ -1,8 +1,13 @@
+
 import React, { useContext, useState, useEffect } from 'react';
 import { CartContext } from '../App';
 import { OrderDetails, CartItem, ConfirmedOrder } from '../types';
-import { CloseIcon, PrintIcon, PlusIcon, MinusIcon, TrashIcon } from './Icons';
+import { CloseIcon, PrintIcon, PlusIcon, MinusIcon, TrashIcon, WhatsAppIcon } from './Icons';
 import { confirmOrder as mockConfirmOrder, sendInvoiceByEmail as mockSendInvoiceByEmail } from '../services/mockApi';
+
+// Declarations for CDN libraries
+declare const html2canvas: any;
+declare const jspdf: { jsPDF: any };
 
 interface CartModalProps {
   isOpen: boolean;
@@ -233,6 +238,118 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
         printWindow.close();
     }, 500);
   };
+
+  const handleSendWhatsApp = async () => {
+    if (!confirmedOrder) return;
+    if (!navigator.share) {
+      alert('ميزة المشاركة غير مدعومة في هذا المتصفح.');
+      return;
+    }
+
+    setIsProcessing(true);
+
+    const printData = confirmedOrder;
+    const orderId = printData.id;
+    const orderDate = new Date(printData.date);
+
+    const itemsHtml = printData.items.map(item => `
+        <tr>
+            <td>${item.name}</td>
+            <td>${item.quantity}</td>
+            <td>${item.price.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)} درهم</td>
+            <td>${(item.price * item.quantity).toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)} درهم</td>
+        </tr>
+    `).join('');
+
+    const invoiceHtml = `
+      <html><head><title>فاتورة الطلب</title>
+      <style>
+          body { font-family: 'Cairo', sans-serif; direction: rtl; margin: 0; padding: 20px; color: #333; background-color: #fff; }
+          .invoice-box { max-width: 800px; margin: auto; padding: 30px; border: 1px solid #eee; box-shadow: 0 0 10px rgba(0, 0, 0, 0.15); font-size: 16px; line-height: 24px; }
+          h1, h2, h3 { color: #000; } h1 { font-size: 2em; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
+          .invoice-meta { margin-bottom: 20px; font-size: 0.9em; color: #555; }
+          h2 { font-size: 1.5em; margin-top: 30px; margin-bottom: 10px; }
+          .customer-details p { margin: 5px 0; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          th, td { border: 1px solid #ddd; padding: 12px; text-align: right; }
+          th { background-color: #f8f8f8; font-weight: 700; }
+          .total-section { margin-top: 30px; text-align: left; padding-top: 15px; border-top: 2px solid #eee; }
+          .total-section h3 { font-size: 1.4em; font-weight: 700; }
+      </style>
+      </head><body>
+      <div class="invoice-box">
+        <h1>فاتورة طلب #${orderId}</h1>
+        <div class="invoice-meta">
+            <p><strong>رقم الطلب:</strong> ${orderId}</p>
+            <p><strong>التاريخ:</strong> ${orderDate.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)}</p>
+        </div>
+        <div class="customer-details">
+            <h2>بيانات العميل</h2>
+            <p><strong>الاسم:</strong> ${printData.customerName}</p>
+            <p><strong>الهاتف:</strong> ${printData.phone}</p>
+            <p><strong>العنوان:</strong> ${printData.address}</p>
+        </div>
+        <h2>المنتجات</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>المنتج</th>
+                    <th>الكمية</th>
+                    <th>سعر الوحدة</th>
+                    <th>الإجمالي الفرعي</th>
+                </tr>
+            </thead>
+            <tbody> ${itemsHtml} </tbody>
+        </table>
+        <div class="total-section">
+            <h3>الإجمالي: ${printData.total.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)} درهم</h3>
+        </div>
+      </div>
+      </body></html>
+    `;
+
+    const container = document.createElement('div');
+    container.innerHTML = invoiceHtml;
+    container.style.width = '800px'; 
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    document.body.appendChild(container);
+
+    try {
+        const canvas = await html2canvas(container.querySelector('.invoice-box'));
+        const imgData = canvas.toDataURL('image/png');
+        const { jsPDF } = jspdf;
+        const pdf = new jsPDF({
+            orientation: 'p',
+            unit: 'px',
+            format: [canvas.width, canvas.height]
+        });
+        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+        const pdfBlob = pdf.output('blob');
+        const pdfFile = new File([pdfBlob], `invoice-${orderId}.pdf`, { type: 'application/pdf' });
+        
+        await navigator.share({
+            title: `فاتورة طلب ${orderId}`,
+            text: `مرفق فاتورة طلبك رقم ${orderId}.`,
+            files: [pdfFile],
+        });
+
+    } catch (error) {
+        console.error('Error sharing PDF:', error);
+        const fallbackText = `
+فاتورة طلب #${orderId}
+العميل: ${printData.customerName}
+الهاتف: ${printData.phone}
+الإجمالي: ${printData.total.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)} درهم
+شكراً لتعاملكم معنا!
+        `.trim();
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(fallbackText)}`;
+        window.open(whatsappUrl, '_blank');
+    } finally {
+        document.body.removeChild(container);
+        setIsProcessing(false);
+    }
+  };
   
   const modalClasses = isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none';
   const contentClasses = isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0';
@@ -256,6 +373,10 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
                    <button onClick={handlePrint} className="flex-1 bg-sky-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-sky-500 transition-colors flex items-center justify-center gap-2">
                       <PrintIcon />
                       طباعة الفاتورة
+                   </button>
+                   <button onClick={handleSendWhatsApp} disabled={isProcessing} className="flex-1 bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-500 transition-colors flex items-center justify-center gap-2 disabled:bg-slate-600 disabled:cursor-not-allowed">
+                      <WhatsAppIcon />
+                      {isProcessing ? 'جاري التجهيز...' : 'إرسال عبر واتساب'}
                    </button>
                    <button onClick={onClose} className="flex-1 bg-amber-500 text-slate-900 font-bold py-3 px-4 rounded-lg hover:bg-amber-400 transition-colors">إغلاق</button>
                 </div>
