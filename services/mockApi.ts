@@ -71,6 +71,22 @@ export const confirmOrder = (orderDetails: OrderDetails): Promise<{ success: boo
   });
 };
 
+// Simulates sending an invoice via email
+export const sendInvoiceByEmail = (order: ConfirmedOrder, recipientEmail: string): Promise<{ success: boolean; message: string }> => {
+  console.log('Mock API: Sending invoice by email to:', recipientEmail, 'for order:', order);
+  return new Promise((resolve, reject) => {
+    // Basic email validation
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipientEmail)) {
+      setTimeout(() => reject({ success: false, message: 'عنوان البريد الإلكتروني غير صالح.' }), 500);
+      return;
+    }
+    setTimeout(() => {
+      console.log(`Mock API: Email sent to ${recipientEmail} for order ${order.id}.`);
+      resolve({ success: true, message: 'تم إرسال الفاتورة بنجاح!' });
+    }, 1500); // 1.5-second delay
+  });
+};
+
 // Simulates fetching past orders
 export const fetchOrderHistory = (): Promise<ConfirmedOrder[]> => {
   console.log('Mock API: Fetching order history...');

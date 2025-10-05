@@ -1,9 +1,8 @@
-
 import React, { useContext, useState, useEffect } from 'react';
 import { CartContext } from '../App';
 import { OrderDetails, CartItem, ConfirmedOrder } from '../types';
 import { CloseIcon, PrintIcon, PlusIcon, MinusIcon, TrashIcon } from './Icons';
-import { confirmOrder as mockConfirmOrder } from '../services/mockApi';
+import { confirmOrder as mockConfirmOrder, sendInvoiceByEmail as mockSendInvoiceByEmail } from '../services/mockApi';
 
 interface CartModalProps {
   isOpen: boolean;
@@ -18,6 +17,7 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [confirmedOrder, setConfirmedOrder] = useState<ConfirmedOrder | null>(null);
+
 
   useEffect(() => {
     if (!isOpen) {
@@ -44,17 +44,31 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
     setIsProcessing(true);
     const orderDetails: OrderDetails = { customerName, phone, address, items: cartItems, total: cartTotal };
     
-    // In a real application, this would be:
-    // google.script.run.withSuccessHandler(response => { ... }).confirmOrder(orderDetails);
-    const result = await mockConfirmOrder(orderDetails);
-    
-    setIsProcessing(false);
-    if (result.success) {
-      setOrderSuccess(true);
-      setConfirmedOrder(result.order);
-      clearCart();
-    } else {
-      alert(`حدث خطأ: ${result.message}`);
+    try {
+        const result = await mockConfirmOrder(orderDetails);
+        
+        if (result.success) {
+          setOrderSuccess(true);
+          setConfirmedOrder(result.order);
+          clearCart();
+
+          // Automatically send invoice email to the business owner
+          mockSendInvoiceByEmail(result.order, 'stemotorino@gmail.com')
+            .then(() => {
+                console.log(`Invoice for order ${result.order.id} sent automatically to business owner.`);
+            })
+            .catch((error) => {
+                console.error(`Failed to automatically send invoice email for order ${result.order.id}:`, error);
+            });
+
+        } else {
+          alert(`حدث خطأ: ${result.message}`);
+        }
+    } catch (error) {
+        console.error("Error confirming order:", error);
+        alert('حدث خطأ غير متوقع عند تأكيد الطلب.');
+    } finally {
+        setIsProcessing(false);
     }
   };
   
@@ -219,7 +233,7 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
         printWindow.close();
     }, 500);
   };
-
+  
   const modalClasses = isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none';
   const contentClasses = isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0';
 
