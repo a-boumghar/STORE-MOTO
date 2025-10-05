@@ -44,6 +44,11 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
             (كرتون : {product.piecesPerCarton} قطعة)
           </p>
         )}
+        {product.sku && (
+          <p className="text-xs text-slate-400 mt-1">
+            (SKU : {product.sku})
+          </p>
+        )}
         <p className="text-sm text-slate-400 mb-4">{product.category}</p>
         
         <div className="mt-auto pt-4 border-t border-slate-700/50">
