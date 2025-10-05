@@ -1,3 +1,4 @@
+
 import React, { useContext, useState, useEffect } from 'react';
 import { CartContext } from '../App';
 import { OrderDetails, CartItem, ConfirmedOrder } from '../types';
@@ -75,8 +76,14 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
         <tr>
             <td>${item.name}</td>
             <td>${item.quantity}</td>
-            <td>${item.price.toLocaleString('ar-EG')} ج.م</td>
-            <td>${(item.price * item.quantity).toLocaleString('ar-EG')} ج.م</td>
+            <td>${
+                // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
+                item.price.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
+            } درهم</td>
+            <td>${
+                // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition. Also corrected currency symbol.
+                (item.price * item.quantity).toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
+            } درهم</td>
         </tr>
     `).join('');
 
@@ -85,7 +92,10 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
         <h1>فاتورة طلب ${orderId ? `#${orderId}` : ''}</h1>
         <div class="invoice-meta">
             <p><strong>رقم الطلب:</strong> ${orderId || 'غير مؤكد'}</p>
-            <p><strong>التاريخ:</strong> ${orderDate.toLocaleString('ar-EG')}</p>
+            <p><strong>التاريخ:</strong> ${
+                // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
+                orderDate.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
+            }</p>
         </div>
         <div class="customer-details">
             <h2>بيانات العميل</h2>
@@ -110,7 +120,10 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
         </table>
         
         <div class="total-section">
-            <h3>الإجمالي: ${printData.total.toLocaleString('ar-EG')} ج.م</h3>
+            <h3>الإجمالي: ${
+                // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition. Also corrected currency symbol.
+                printData.total.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
+            } درهم</h3>
         </div>
       </div>
     `;
@@ -247,14 +260,20 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
                                 <img src={item.image} alt={item.name} className="w-16 h-16 rounded-md object-cover" />
                                 <div className="flex-grow">
                                     <p className="font-bold">{item.name}</p>
-                                    <p className="text-sm text-amber-400">{item.price.toLocaleString('ar-EG')} جم</p>
+                                    <p className="text-sm text-amber-400">{
+                                        // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
+                                        item.price.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
+                                    } درهم</p>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="p-1 rounded-full bg-slate-600 hover:bg-amber-500"><PlusIcon size={16}/></button>
                                     <span className="w-8 text-center font-bold">{item.quantity}</span>
                                     <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="p-1 rounded-full bg-slate-600 hover:bg-amber-500"><MinusIcon size={16}/></button>
                                 </div>
-                                <p className="w-24 text-start font-bold">{(item.price * item.quantity).toLocaleString('ar-EG')} جم</p>
+                                <p className="w-24 text-start font-bold">{
+                                    // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
+                                    (item.price * item.quantity).toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
+                                } درهم</p>
                                 <button onClick={() => removeFromCart(item.id)} className="text-red-500 hover:text-red-400 p-2"><TrashIcon /></button>
                                 </div>
                             ))}
@@ -262,7 +281,10 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
                         {/* Total */}
                         <div className="mt-6 pt-4 border-t border-slate-700 flex justify-between items-center">
                             <p className="text-lg font-bold">الإجمالي:</p>
-                            <p className="text-2xl font-black text-amber-500">{cartTotal.toLocaleString('ar-EG')} جم</p>
+                            <p className="text-2xl font-black text-amber-500">{
+                                // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
+                                cartTotal.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
+                            } درهم</p>
                         </div>
                         {/* Customer Form */}
                         <div className="mt-6 pt-4 border-t border-slate-700 space-y-3">

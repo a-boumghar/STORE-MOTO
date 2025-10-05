@@ -30,7 +30,10 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
         <div className="mt-auto pt-4 border-t border-slate-700/50">
           <div className="flex justify-between items-center mb-3">
               <p className="text-sm text-slate-300">السعر:</p>
-              <p className="text-xl font-black text-amber-500">{product.price.toLocaleString('ar-EG')} <span className="text-sm">جم</span></p>
+              <p className="text-xl font-black text-amber-500">{
+                // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
+                product.price.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
+              } <span className="text-sm">درهم</span></p>
           </div>
           <div className="flex items-center gap-2">
             <input 
