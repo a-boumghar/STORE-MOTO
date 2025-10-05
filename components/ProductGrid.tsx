@@ -41,12 +41,12 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
               value={quantity}
               onChange={handleQuantityChange}
               min="1"
-              className="w-20 bg-slate-700 border border-slate-600 rounded-md text-center py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
+              className="w-[70%] bg-slate-700 border border-slate-600 rounded-md text-center py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
               aria-label="الكمية"
             />
             <button
               onClick={() => addToCart(product, quantity)}
-              className="flex-grow bg-amber-500 text-slate-900 font-bold py-2 px-3 rounded-lg flex items-center justify-center gap-2 transform transition-transform duration-200 group-hover:bg-amber-400 active:scale-95"
+              className="w-[30%] bg-amber-500 text-slate-900 font-bold py-2 px-3 rounded-lg flex items-center justify-center gap-2 transform transition-transform duration-200 group-hover:bg-amber-400 active:scale-95"
             >
               <PlusIcon />
               <span>أضف</span>
