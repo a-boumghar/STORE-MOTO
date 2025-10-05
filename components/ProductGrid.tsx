@@ -10,19 +10,33 @@ interface ProductGridProps {
 
 const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
   const cartContext = useContext(CartContext);
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState<number | ''>('');
   
   if (!cartContext) return null;
   const { addToCart } = cartContext;
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Math.max(1, parseInt(e.target.value, 10) || 1);
-    setQuantity(value);
+    const rawValue = e.target.value;
+    if (rawValue === '') {
+        setQuantity('');
+    } else {
+        const value = parseInt(rawValue, 10);
+        // set quantity only if it's a valid positive number
+        if (!isNaN(value) && value > 0) {
+            setQuantity(value);
+        }
+    }
+  };
+
+  const handleAddToCart = () => {
+    const numQuantity = Number(quantity) || 1; // Default to 1 if input is empty
+    addToCart(product, numQuantity);
+    setQuantity(''); // Reset to show placeholder
   };
 
   return (
     <div className="bg-slate-800 rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105 hover:shadow-amber-500/20 group flex flex-col">
-      <img src={product.image} alt={product.name} className="w-full h-48 object-cover" />
+      <img src={product.image} alt={product.name} className="w-full aspect-square object-cover" />
       <div className="p-4 flex flex-col flex-grow">
         <h3 className="text-lg font-bold text-slate-100">{product.name}</h3>
         <p className="text-sm text-slate-400 mb-4">{product.category}</p>
@@ -41,11 +55,12 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
               value={quantity}
               onChange={handleQuantityChange}
               min="1"
+              placeholder="كمية"
               className="w-[70%] bg-slate-700 border border-slate-600 rounded-md text-center py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
               aria-label="الكمية"
             />
             <button
-              onClick={() => addToCart(product, quantity)}
+              onClick={handleAddToCart}
               className="w-[30%] bg-amber-500 text-slate-900 font-bold py-2 px-3 rounded-lg flex items-center justify-center gap-2 transform transition-transform duration-200 group-hover:bg-amber-400 active:scale-95"
             >
               <PlusIcon />
