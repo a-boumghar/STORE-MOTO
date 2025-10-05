@@ -49,7 +49,7 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
               className="flex-grow bg-amber-500 text-slate-900 font-bold py-2 px-3 rounded-lg flex items-center justify-center gap-2 transform transition-transform duration-200 group-hover:bg-amber-400 active:scale-95"
             >
               <PlusIcon />
-              <span>أضف للسلة</span>
+              <span>أضف</span>
             </button>
           </div>
         </div>
