@@ -1,4 +1,3 @@
-
 import React, { useContext, useState, useEffect } from 'react';
 import { CartContext } from '../App';
 import { OrderDetails, CartItem, ConfirmedOrder } from '../types';
@@ -95,56 +94,51 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
         <tr>
             <td>${item.name}</td>
             <td>${item.quantity}</td>
-            <td>${
-                // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
-                item.price.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
-            } درهم</td>
-            <td>${
-                // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition. Also corrected currency symbol.
-                (item.price * item.quantity).toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
-            } درهم</td>
+            <td>${item.price.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)}</td>
+            <td>${(item.price * item.quantity).toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)}</td>
         </tr>
     `).join('');
 
     const invoiceHtml = `
-      <div class="invoice-box">
-        <h1>فاتورة طلب ${orderId ? `#${orderId}` : ''}</h1>
-        <div class="invoice-meta">
-            <p><strong>رقم الطلب:</strong> ${orderId || 'غير مؤكد'}</p>
-            <p><strong>التاريخ:</strong> ${
-                // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
-                orderDate.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
-            }</p>
-        </div>
-        <div class="customer-details">
-            <h2>بيانات العميل</h2>
-            <p><strong>الاسم:</strong> ${printData.customerName || 'N/A'}</p>
-            <p><strong>الهاتف:</strong> ${printData.phone || 'N/A'}</p>
-            <p><strong>العنوان:</strong> ${printData.address || 'N/A'}</p>
-        </div>
-        
-        <h2>المنتجات</h2>
-        <table>
-            <thead>
+        <div class="invoice-container">
+            <div class="invoice-header">
+              <h1 class="brand-name">MOTORINO</h1>
+              <div class="invoice-title">فاتورة طلب ${orderId ? `#${orderId}` : ''}</div>
+            </div>
+            <div class="invoice-details">
+              <div class="customer-info">
+                <h3>بيانات العميل</h3>
+                <p><strong>الاسم:</strong> ${printData.customerName || 'N/A'}</p>
+                <p><strong>الهاتف:</strong> ${printData.phone || 'N/A'}</p>
+                <p><strong>العنوان:</strong> ${printData.address || 'N/A'}</p>
+              </div>
+              <div class="order-info">
+                <h3>بيانات الطلب</h3>
+                <p><strong>رقم الطلب:</strong> ${orderId || 'غير مؤكد'}</p>
+                <p><strong>التاريخ:</strong> ${orderDate.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric', numberingSystem: 'latn' } as any)}</p>
+              </div>
+            </div>
+            <table class="invoice-table">
+              <thead>
                 <tr>
-                    <th>المنتج</th>
-                    <th>الكمية</th>
-                    <th>سعر الوحدة</th>
-                    <th>الإجمالي الفرعي</th>
+                  <th>المنتج</th>
+                  <th>الكمية</th>
+                  <th>سعر الوحدة (درهم)</th>
+                  <th>الإجمالي الفرعي (درهم)</th>
                 </tr>
-            </thead>
-            <tbody>
+              </thead>
+              <tbody>
                 ${itemsHtml}
-            </tbody>
-        </table>
-        
-        <div class="total-section">
-            <h3>الإجمالي: ${
-                // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition. Also corrected currency symbol.
-                printData.total.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
-            } درهم</h3>
+              </tbody>
+            </table>
+            <div class="invoice-total">
+              <div class="invoice-total-label">الإجمالي:</div>
+              <div class="invoice-total-value">${printData.total.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)} درهم</div>
+            </div>
+            <div class="invoice-footer">
+              <p>شكراً لتعاملكم معنا!</p>
+            </div>
         </div>
-      </div>
     `;
 
     const printWindow = window.open('', '', 'height=800,width=800');
@@ -156,72 +150,111 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
     printWindow.document.write('<html><head><title>فاتورة الطلب</title>');
     printWindow.document.write('<link rel="preconnect" href="https://fonts.googleapis.com">');
     printWindow.document.write('<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>');
-    printWindow.document.write('<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">');
+    printWindow.document.write('<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">');
     
     printWindow.document.write(`
         <style>
+            @media print {
+                body {
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+            }
             body { 
-                font-family: 'Cairo', sans-serif; 
-                direction: rtl;
-                margin: 0;
-                padding: 20px;
-                color: #333;
-                background-color: #fff;
+              font-family: 'Cairo', sans-serif; 
+              direction: rtl;
+              margin: 0;
+              color: #1a202c;
+              background-color: #fff;
+              -webkit-font-smoothing: antialiased;
             }
-            .invoice-box {
-                max-width: 800px;
-                margin: auto;
+            .invoice-container {
                 padding: 30px;
-                border: 1px solid #eee;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
-                font-size: 16px;
-                line-height: 24px;
+                background: #fff;
             }
-            h1, h2, h3 {
-                color: #000;
+            .invoice-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 4px solid #f59e0b;
+                padding-bottom: 10px;
+                margin-bottom: 30px;
             }
-            h1 {
-              font-size: 2em;
-              border-bottom: 2px solid #eee;
-              padding-bottom: 10px;
-              margin-bottom: 15px;
+            .brand-name {
+                font-size: 2.25rem;
+                font-weight: 900;
+                color: #1e293b;
             }
-            .invoice-meta {
-              margin-bottom: 20px;
-              font-size: 0.9em;
-              color: #555;
+            .invoice-title {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #64748b;
             }
-            h2 {
-              font-size: 1.5em;
-              margin-top: 30px;
-              margin-bottom: 10px;
+            .invoice-details {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 30px;
+                font-size: 0.875rem;
             }
-            .customer-details p {
-                margin: 5px 0;
+            .customer-info, .order-info {
+                width: 48%;
             }
-            table { 
-                width: 100%; 
-                border-collapse: collapse; 
-                margin-top: 20px;
+            .customer-info p, .order-info p {
+                margin: 4px 0;
             }
-            th, td { 
-                border: 1px solid #ddd; 
-                padding: 12px; 
+            h3 {
+                font-size: 1rem;
+                font-weight: 700;
+                margin-bottom: 8px;
+                color: #0f172a;
+            }
+            .invoice-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 30px;
+                font-size: 0.875rem;
+            }
+            .invoice-table th, .invoice-table td {
+                border-bottom: 1px solid #e2e8f0;
+                padding: 12px 8px;
                 text-align: right; 
             }
-            th { 
-                background-color: #f8f8f8; 
+            .invoice-table th {
+                background-color: #f1f5f9;
                 font-weight: 700;
+                color: #334155;
+                text-transform: uppercase;
+                font-size: 0.75rem;
             }
-            .total-section {
-                margin-top: 30px;
-                text-align: left;
+            .invoice-table tr:last-child td {
+                border-bottom: none;
+            }
+            .invoice-total {
+                display: flex;
+                justify-content: flex-end;
+                align-items: flex-start;
                 padding-top: 15px;
-                border-top: 2px solid #eee;
+                border-top: 2px solid #cbd5e1;
+                margin-top: 20px;
             }
-            .total-section h3 {
-                font-size: 1.4em;
+            .invoice-total-label {
+                font-size: 1.125rem;
                 font-weight: 700;
+                margin-left: 20px;
+                color: #475569;
+            }
+            .invoice-total-value {
+                font-size: 1.5rem;
+                font-weight: 900;
+                color: #0f172a;
+            }
+            .invoice-footer {
+                text-align: center;
+                margin-top: 40px;
+                padding-top: 15px;
+                border-top: 1px solid #e2e8f0;
+                color: #64748b;
+                font-size: 0.875rem;
             }
         </style>
     `);
@@ -241,8 +274,26 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
 
   const handleSendWhatsApp = async () => {
     if (!confirmedOrder) return;
-    if (!navigator.share) {
-      alert('ميزة المشاركة غير مدعومة في هذا المتصفح.');
+
+    const fallbackShare = () => {
+        const fallbackText = `
+فاتورة طلب #${confirmedOrder.id}
+العميل: ${confirmedOrder.customerName}
+الهاتف: ${confirmedOrder.phone}
+---
+المنتجات:
+${confirmedOrder.items.map(item => `- ${item.name} (x${item.quantity})`).join('\n')}
+---
+الإجمالي: ${confirmedOrder.total.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)} درهم
+شكراً لتعاملكم معنا!
+        `.trim().replace(/^ +/gm, '');
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(fallbackText)}`;
+        window.open(whatsappUrl, '_blank');
+    };
+    
+    // Check for Web Share API support for files
+    if (!navigator.share || !navigator.canShare || !navigator.canShare({ files: [new File([], 'test.pdf', { type: 'application/pdf' })] })) {
+      fallbackShare();
       return;
     }
 
@@ -256,75 +307,194 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
         <tr>
             <td>${item.name}</td>
             <td>${item.quantity}</td>
-            <td>${item.price.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)} درهم</td>
-            <td>${(item.price * item.quantity).toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)} درهم</td>
+            <td>${item.price.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)}</td>
+            <td>${(item.price * item.quantity).toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)}</td>
         </tr>
     `).join('');
 
     const invoiceHtml = `
-      <html><head><title>فاتورة الطلب</title>
-      <style>
-          body { font-family: 'Cairo', sans-serif; direction: rtl; margin: 0; padding: 20px; color: #333; background-color: #fff; }
-          .invoice-box { max-width: 800px; margin: auto; padding: 30px; border: 1px solid #eee; box-shadow: 0 0 10px rgba(0, 0, 0, 0.15); font-size: 16px; line-height: 24px; }
-          h1, h2, h3 { color: #000; } h1 { font-size: 2em; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
-          .invoice-meta { margin-bottom: 20px; font-size: 0.9em; color: #555; }
-          h2 { font-size: 1.5em; margin-top: 30px; margin-bottom: 10px; }
-          .customer-details p { margin: 5px 0; }
-          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-          th, td { border: 1px solid #ddd; padding: 12px; text-align: right; }
-          th { background-color: #f8f8f8; font-weight: 700; }
-          .total-section { margin-top: 30px; text-align: left; padding-top: 15px; border-top: 2px solid #eee; }
-          .total-section h3 { font-size: 1.4em; font-weight: 700; }
-      </style>
-      </head><body>
-      <div class="invoice-box">
-        <h1>فاتورة طلب #${orderId}</h1>
-        <div class="invoice-meta">
-            <p><strong>رقم الطلب:</strong> ${orderId}</p>
-            <p><strong>التاريخ:</strong> ${orderDate.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)}</p>
-        </div>
-        <div class="customer-details">
-            <h2>بيانات العميل</h2>
-            <p><strong>الاسم:</strong> ${printData.customerName}</p>
-            <p><strong>الهاتف:</strong> ${printData.phone}</p>
-            <p><strong>العنوان:</strong> ${printData.address}</p>
-        </div>
-        <h2>المنتجات</h2>
-        <table>
-            <thead>
+      <html>
+        <head>
+          <title>فاتورة الطلب</title>
+          <link rel="preconnect" href="https://fonts.googleapis.com">
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+          <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+          <style>
+            body { 
+              font-family: 'Cairo', sans-serif; 
+              direction: rtl;
+              margin: 0;
+              color: #1a202c;
+              background-color: #fff;
+              -webkit-font-smoothing: antialiased;
+            }
+            .invoice-container {
+                padding: 30px;
+                background: #fff;
+            }
+            .invoice-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 4px solid #f59e0b; /* amber-500 */
+                padding-bottom: 10px;
+                margin-bottom: 30px;
+            }
+            .brand-name {
+                font-size: 2.25rem;
+                font-weight: 900;
+                color: #1e293b; /* slate-800 */
+            }
+            .invoice-title {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #64748b; /* slate-500 */
+            }
+            .invoice-details {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 30px;
+                font-size: 0.875rem;
+            }
+            .customer-info, .order-info {
+                width: 48%;
+            }
+            .customer-info p, .order-info p {
+                margin: 4px 0;
+            }
+            h3 {
+                font-size: 1rem;
+                font-weight: 700;
+                margin-bottom: 8px;
+                color: #0f172a; /* slate-900 */
+            }
+            .invoice-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 30px;
+                font-size: 0.875rem;
+            }
+            .invoice-table th, .invoice-table td {
+                border-bottom: 1px solid #e2e8f0; /* slate-200 */
+                padding: 12px 8px;
+                text-align: right; 
+            }
+            .invoice-table th {
+                background-color: #f1f5f9; /* slate-100 */
+                font-weight: 700;
+                color: #334155; /* slate-700 */
+                text-transform: uppercase;
+                font-size: 0.75rem;
+            }
+            .invoice-table tr:last-child td {
+                border-bottom: none;
+            }
+            .invoice-total {
+                display: flex;
+                justify-content: flex-end;
+                align-items: flex-start;
+                padding-top: 15px;
+                border-top: 2px solid #cbd5e1; /* slate-300 */
+                margin-top: 20px;
+            }
+            .invoice-total-label {
+                font-size: 1.125rem;
+                font-weight: 700;
+                margin-left: 20px;
+                color: #475569; /* slate-600 */
+            }
+            .invoice-total-value {
+                font-size: 1.5rem;
+                font-weight: 900;
+                color: #0f172a; /* slate-900 */
+            }
+            .invoice-footer {
+                text-align: center;
+                margin-top: 40px;
+                padding-top: 15px;
+                border-top: 1px solid #e2e8f0; /* slate-200 */
+                color: #64748b; /* slate-500 */
+                font-size: 0.875rem;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="invoice-container">
+            <div class="invoice-header">
+              <h1 class="brand-name">MOTORINO</h1>
+              <div class="invoice-title">فاتورة طلب</div>
+            </div>
+            <div class="invoice-details">
+              <div class="customer-info">
+                <h3>بيانات العميل</h3>
+                <p><strong>الاسم:</strong> ${printData.customerName}</p>
+                <p><strong>الهاتف:</strong> ${printData.phone}</p>
+                <p><strong>العنوان:</strong> ${printData.address}</p>
+              </div>
+              <div class="order-info">
+                <h3>بيانات الطلب</h3>
+                <p><strong>رقم الطلب:</strong> ${orderId}</p>
+                <p><strong>التاريخ:</strong> ${orderDate.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric', numberingSystem: 'latn' } as any)}</p>
+              </div>
+            </div>
+            <table class="invoice-table">
+              <thead>
                 <tr>
-                    <th>المنتج</th>
-                    <th>الكمية</th>
-                    <th>سعر الوحدة</th>
-                    <th>الإجمالي الفرعي</th>
+                  <th>المنتج</th>
+                  <th>الكمية</th>
+                  <th>سعر الوحدة (درهم)</th>
+                  <th>الإجمالي الفرعي (درهم)</th>
                 </tr>
-            </thead>
-            <tbody> ${itemsHtml} </tbody>
-        </table>
-        <div class="total-section">
-            <h3>الإجمالي: ${printData.total.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)} درهم</h3>
-        </div>
-      </div>
-      </body></html>
+              </thead>
+              <tbody>
+                ${itemsHtml}
+              </tbody>
+            </table>
+            <div class="invoice-total">
+              <div class="invoice-total-label">الإجمالي:</div>
+              <div class="invoice-total-value">${printData.total.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)} درهم</div>
+            </div>
+            <div class="invoice-footer">
+              <p>شكراً لتعاملكم معنا!</p>
+            </div>
+          </div>
+        </body>
+      </html>
     `;
 
     const container = document.createElement('div');
-    container.innerHTML = invoiceHtml;
-    container.style.width = '800px'; 
+    container.style.width = '794px';
     container.style.position = 'absolute';
     container.style.left = '-9999px';
+    container.innerHTML = invoiceHtml;
     document.body.appendChild(container);
 
     try {
-        const canvas = await html2canvas(container.querySelector('.invoice-box'));
-        const imgData = canvas.toDataURL('image/png');
+        const canvas = await html2canvas(container, { scale: 2 });
+        const imgData = canvas.toDataURL('image/jpeg', 0.9);
         const { jsPDF } = jspdf;
         const pdf = new jsPDF({
             orientation: 'p',
-            unit: 'px',
-            format: [canvas.width, canvas.height]
+            unit: 'mm',
+            format: 'a4'
         });
-        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const canvasAspectRatio = canvas.width / canvas.height;
+
+        let imgWidth = pdfWidth;
+        let imgHeight = pdfWidth / canvasAspectRatio;
+
+        if (imgHeight > pdfHeight) {
+            imgHeight = pdfHeight;
+            imgWidth = pdfHeight * canvasAspectRatio;
+        }
+
+        const xOffset = (pdfWidth - imgWidth) / 2;
+
+        pdf.addImage(imgData, 'JPEG', xOffset, 0, imgWidth, imgHeight);
+
         const pdfBlob = pdf.output('blob');
         const pdfFile = new File([pdfBlob], `invoice-${orderId}.pdf`, { type: 'application/pdf' });
         
@@ -336,15 +506,7 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
 
     } catch (error) {
         console.error('Error sharing PDF:', error);
-        const fallbackText = `
-فاتورة طلب #${orderId}
-العميل: ${printData.customerName}
-الهاتف: ${printData.phone}
-الإجمالي: ${printData.total.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)} درهم
-شكراً لتعاملكم معنا!
-        `.trim();
-        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(fallbackText)}`;
-        window.open(whatsappUrl, '_blank');
+        fallbackShare();
     } finally {
         document.body.removeChild(container);
         setIsProcessing(false);
