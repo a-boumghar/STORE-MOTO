@@ -39,6 +39,11 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
       <img src={product.image} alt={product.name} className="w-full aspect-square object-cover" />
       <div className="p-4 flex flex-col flex-grow">
         <h3 className="text-lg font-bold text-slate-100">{product.name}</h3>
+        {product.piecesPerCarton && (
+          <p className="text-xs text-cyan-400 mt-1">
+            (كرتون : {product.piecesPerCarton} قطعة)
+          </p>
+        )}
         <p className="text-sm text-slate-400 mb-4">{product.category}</p>
         
         <div className="mt-auto pt-4 border-t border-slate-700/50">
