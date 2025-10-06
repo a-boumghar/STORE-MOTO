@@ -58,6 +58,7 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
           clearCart();
 
           // Automatically send invoice email to the business owner
+          /*
           mockSendInvoiceByEmail(result.order, 'stemotorino@gmail.com')
             .then(() => {
                 console.log(`Invoice for order ${result.order.id} sent automatically to business owner.`);
@@ -65,6 +66,7 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
             .catch((error) => {
                 console.error(`Failed to automatically send invoice email for order ${result.order.id}:`, error);
             });
+          */
 
         } else {
           alert(`حدث خطأ: ${result.message}`);

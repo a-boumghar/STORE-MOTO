@@ -17,7 +17,7 @@ const mockProducts: Product[] = [
 
 const mockPastOrders: ConfirmedOrder[] = [
     {
-        id: 'ORD-1672531200000',
+        id: 'FCT-00001',
         date: '2023-01-01T00:00:00.000Z',
         customerName: 'أحمد محمود',
         phone: '01012345678',
@@ -29,7 +29,7 @@ const mockPastOrders: ConfirmedOrder[] = [
         total: (mockProducts[0].price * 2) + mockProducts[6].price,
     },
     {
-        id: 'ORD-1675209600000',
+        id: 'FCT-00002',
         date: '2023-02-01T00:00:00.000Z',
         customerName: 'فاطمة علي',
         phone: '01198765432',
@@ -42,6 +42,9 @@ const mockPastOrders: ConfirmedOrder[] = [
         total: mockProducts[2].price + mockProducts[5].price + (mockProducts[11].price * 2),
     }
 ];
+
+// This simulates a database sequence. It starts after the existing mock orders.
+let lastOrderIdCounter = mockPastOrders.length;
 
 
 // Fetches products from a Google Sheet Web App
@@ -86,9 +89,12 @@ export const confirmOrder = (orderDetails: OrderDetails): Promise<{ success: boo
   console.log('Mock API: Confirming order with details:', orderDetails);
   return new Promise(resolve => {
     setTimeout(() => {
+      lastOrderIdCounter++; // Increment the order counter
+      const newOrderId = `FCT-${String(lastOrderIdCounter).padStart(5, '0')}`; // Format to FCT-0000X
+
       const confirmedOrder: ConfirmedOrder = {
         ...orderDetails,
-        id: `ORD-${Date.now()}`,
+        id: newOrderId,
         date: new Date().toISOString(),
       };
       console.log(`Mock API: Order confirmed with ID ${confirmedOrder.id}, saved to Sheet.`);
