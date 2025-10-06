@@ -1,5 +1,4 @@
 
-
 import React, { useState, useEffect } from 'react';
 import { ConfirmedOrder } from '../types';
 import { fetchOrderHistory as mockFetchOrderHistory } from '../services/mockApi';
@@ -64,8 +63,11 @@ const OrderHistoryModal: React.FC<OrderHistoryModalProps> = ({ isOpen, onClose }
               </div>
               <div className="text-left">
                 <p className="text-lg font-bold">{
-                    // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
-                    order.total.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
+                    order.total.toLocaleString('ar-EG', { 
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                      numberingSystem: 'latn' 
+                    } as any)
                 } درهم</p>
                 <span className="text-xs bg-sky-100 text-sky-700 font-semibold px-2 py-1 rounded-full">عرض التفاصيل</span>
               </div>
@@ -100,13 +102,19 @@ const OrderHistoryModal: React.FC<OrderHistoryModalProps> = ({ isOpen, onClose }
                     <div className="flex-grow">
                         <p className="font-bold text-sm">{item.name}</p>
                         <p className="text-xs text-slate-500">{item.quantity} x {
-                            // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
-                            item.price.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
+                            item.price.toLocaleString('ar-EG', { 
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                              numberingSystem: 'latn' 
+                            } as any)
                         } درهم</p>
                     </div>
                     <p className="font-bold text-red-600 text-sm">{
-                        // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
-                        (item.price * item.quantity).toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
+                        (item.price * item.quantity).toLocaleString('ar-EG', { 
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                          numberingSystem: 'latn' 
+                        } as any)
                     } درهم</p>
                 </div>
             ))}
@@ -115,8 +123,11 @@ const OrderHistoryModal: React.FC<OrderHistoryModalProps> = ({ isOpen, onClose }
         <div className="mt-4 pt-4 border-t border-slate-200 flex justify-between items-center">
             <p className="text-lg font-bold">الإجمالي:</p>
             <p className="text-2xl font-black text-red-600">{
-                // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
-                selectedOrder.total.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
+                selectedOrder.total.toLocaleString('ar-EG', { 
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                  numberingSystem: 'latn' 
+                } as any)
             } درهم</p>
         </div>
       </div>

@@ -95,8 +95,8 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
         <tr>
             <td>${item.name}${item.sku ? `<br><span style="font-size: 0.75rem; color: #64748b;">SKU: ${item.sku}</span>` : ''}</td>
             <td>${item.quantity}</td>
-            <td>${item.price.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)}</td>
-            <td>${(item.price * item.quantity).toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)}</td>
+            <td>${item.price.toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2, numberingSystem: 'latn' } as any)}</td>
+            <td>${(item.price * item.quantity).toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2, numberingSystem: 'latn' } as any)}</td>
         </tr>
     `).join('');
 
@@ -134,7 +134,7 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
             </table>
             <div class="invoice-total">
               <div class="invoice-total-label">الإجمالي:</div>
-              <div class="invoice-total-value">${printData.total.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)} درهم</div>
+              <div class="invoice-total-value">${printData.total.toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2, numberingSystem: 'latn' } as any)} درهم</div>
             </div>
             <div class="invoice-footer">
               <p>شكراً لتعاملكم معنا!</p>
@@ -285,7 +285,7 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
 المنتجات:
 ${confirmedOrder.items.map(item => `- ${item.name}${item.sku ? ` (SKU: ${item.sku})` : ''} (x${item.quantity})`).join('\n')}
 ---
-الإجمالي: ${confirmedOrder.total.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)} درهم
+الإجمالي: ${confirmedOrder.total.toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2, numberingSystem: 'latn' } as any)} درهم
 شكراً لتعاملكم معنا!
         `.trim().replace(/^ +/gm, '');
         const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(fallbackText)}`;
@@ -308,8 +308,8 @@ ${confirmedOrder.items.map(item => `- ${item.name}${item.sku ? ` (SKU: ${item.sk
         <tr>
             <td>${item.name}${item.sku ? `<br><span style="font-size: 0.75rem; color: #64748b;">SKU: ${item.sku}</span>` : ''}</td>
             <td>${item.quantity}</td>
-            <td>${item.price.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)}</td>
-            <td>${(item.price * item.quantity).toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)}</td>
+            <td>${item.price.toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2, numberingSystem: 'latn' } as any)}</td>
+            <td>${(item.price * item.quantity).toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2, numberingSystem: 'latn' } as any)}</td>
         </tr>
     `).join('');
 
@@ -453,7 +453,7 @@ ${confirmedOrder.items.map(item => `- ${item.name}${item.sku ? ` (SKU: ${item.sk
             </table>
             <div class="invoice-total">
               <div class="invoice-total-label">الإجمالي:</div>
-              <div class="invoice-total-value">${printData.total.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)} درهم</div>
+              <div class="invoice-total-value">${printData.total.toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2, numberingSystem: 'latn' } as any)} درهم</div>
             </div>
             <div class="invoice-footer">
               <p>شكراً لتعاملكم معنا!</p>
@@ -559,8 +559,7 @@ ${confirmedOrder.items.map(item => `- ${item.name}${item.sku ? ` (SKU: ${item.sk
                                 <div className="flex-grow">
                                     <p className="font-bold">{item.name}</p>
                                     <p className="text-sm text-red-600">{
-                                        // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
-                                        item.price.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
+                                        item.price.toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2, numberingSystem: 'latn' } as any)
                                     } درهم</p>
                                 </div>
                                 <div className="flex items-center gap-2">
@@ -569,8 +568,7 @@ ${confirmedOrder.items.map(item => `- ${item.name}${item.sku ? ` (SKU: ${item.sk
                                     <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="p-1 rounded-full bg-slate-200 hover:bg-red-600 hover:text-white transition-colors"><MinusIcon size={16}/></button>
                                 </div>
                                 <p className="w-24 text-start font-bold">{
-                                    // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
-                                    (item.price * item.quantity).toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
+                                    (item.price * item.quantity).toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2, numberingSystem: 'latn' } as any)
                                 } درهم</p>
                                 <button onClick={() => removeFromCart(item.id)} className="text-red-500 hover:text-red-400 p-2 transition-colors"><TrashIcon /></button>
                                 </div>
@@ -580,8 +578,7 @@ ${confirmedOrder.items.map(item => `- ${item.name}${item.sku ? ` (SKU: ${item.sk
                         <div className="mt-6 pt-4 border-t border-slate-200 flex justify-between items-center">
                             <p className="text-lg font-bold">الإجمالي:</p>
                             <p className="text-2xl font-black text-red-600">{
-                                // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
-                                cartTotal.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
+                                cartTotal.toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2, numberingSystem: 'latn' } as any)
                             } درهم</p>
                         </div>
                         {/* Customer Form */}

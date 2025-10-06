@@ -1,5 +1,4 @@
 
-
 import React, { useContext, useState } from 'react';
 import { Product } from '../types';
 import { CartContext } from '../App';
@@ -56,8 +55,11 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
           <div className="flex justify-between items-center mb-3">
               <p className="text-sm text-slate-600">السعر:</p>
               <p className="text-xl font-black text-red-600">{
-                // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
-                product.price.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
+                product.price.toLocaleString('ar-EG', { 
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                  numberingSystem: 'latn' 
+                } as any)
               } <span className="text-sm">درهم</span></p>
           </div>
           <div className="flex items-center gap-2">
