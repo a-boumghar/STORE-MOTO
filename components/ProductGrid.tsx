@@ -35,25 +35,25 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
   };
 
   return (
-    <div className="bg-slate-800 rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105 hover:shadow-amber-500/20 group flex flex-col">
+    <div className="bg-white rounded-lg overflow-hidden border border-slate-200 shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-slate-200 group flex flex-col">
       <img src={product.image} alt={product.name} className="w-full aspect-square object-cover" />
       <div className="p-4 flex flex-col flex-grow">
-        <h3 className="text-lg font-bold text-slate-100">{product.name}</h3>
+        <h3 className="text-lg font-bold text-slate-800">{product.name}</h3>
         {product.piecesPerCarton && (
-          <p className="text-xs text-cyan-400 mt-1">
+          <p className="text-xs text-sky-600 mt-1">
             (كرتون : {product.piecesPerCarton} قطعة)
           </p>
         )}
         {product.sku && (
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             (SKU : {product.sku})
           </p>
         )}
-        <p className="text-sm text-slate-400 mb-4">{product.category}</p>
+        <p className="text-sm text-slate-500 mb-4">{product.category}</p>
         
-        <div className="mt-auto pt-4 border-t border-slate-700/50">
+        <div className="mt-auto pt-4 border-t border-slate-200/80">
           <div className="flex justify-between items-center mb-3">
-              <p className="text-sm text-slate-300">السعر:</p>
+              <p className="text-sm text-slate-600">السعر:</p>
               <p className="text-xl font-black text-amber-500">{
                 // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
                 product.price.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
@@ -66,7 +66,7 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
               onChange={handleQuantityChange}
               min="1"
               placeholder="كمية"
-              className="w-[70%] bg-slate-700 border border-slate-600 rounded-md text-center py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
+              className="w-[70%] bg-slate-100 border border-slate-300 text-slate-900 rounded-md text-center py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
               aria-label="الكمية"
             />
             <button
@@ -85,7 +85,7 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
 
 const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
   if (products.length === 0) {
-    return <div className="text-center py-20 text-xl text-slate-400">لم يتم العثور على منتجات تطابق بحثك.</div>;
+    return <div className="text-center py-20 text-xl text-slate-500">لم يتم العثور على منتجات تطابق بحثك.</div>;
   }
   
   return (

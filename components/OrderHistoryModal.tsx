@@ -41,20 +41,20 @@ const OrderHistoryModal: React.FC<OrderHistoryModalProps> = ({ isOpen, onClose }
   const renderListView = () => (
     <>
       {isLoading ? (
-        <p className="text-center text-slate-400 py-10">جاري تحميل الطلبات...</p>
+        <p className="text-center text-slate-500 py-10">جاري تحميل الطلبات...</p>
       ) : orders.length === 0 ? (
-        <p className="text-center text-slate-400 py-10">لا يوجد طلبات سابقة.</p>
+        <p className="text-center text-slate-500 py-10">لا يوجد طلبات سابقة.</p>
       ) : (
         <div className="space-y-3">
           {orders.map(order => (
             <div 
               key={order.id} 
               onClick={() => handleSelectOrder(order)}
-              className="flex justify-between items-center gap-4 bg-slate-700/50 p-4 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors"
+              className="flex justify-between items-center gap-4 bg-slate-50 p-4 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors"
             >
               <div>
                 <p className="font-bold text-amber-400">{order.id}</p>
-                <p className="text-sm text-slate-300">
+                <p className="text-sm text-slate-500">
                   {
                     // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
                     new Date(order.date).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric', numberingSystem: 'latn' } as any)
@@ -66,7 +66,7 @@ const OrderHistoryModal: React.FC<OrderHistoryModalProps> = ({ isOpen, onClose }
                     // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
                     order.total.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
                 } درهم</p>
-                <span className="text-xs bg-sky-500/50 text-sky-200 px-2 py-1 rounded-full">عرض التفاصيل</span>
+                <span className="text-xs bg-sky-100 text-sky-700 font-semibold px-2 py-1 rounded-full">عرض التفاصيل</span>
               </div>
             </div>
           ))}
@@ -81,8 +81,8 @@ const OrderHistoryModal: React.FC<OrderHistoryModalProps> = ({ isOpen, onClose }
     return (
       <div>
         {/* Customer Details */}
-        <div className="p-4 mb-4 bg-slate-900/50 rounded-lg">
-            <h3 className="font-bold text-lg mb-2 border-b border-slate-600 pb-2">بيانات العميل</h3>
+        <div className="p-4 mb-4 bg-slate-100 rounded-lg">
+            <h3 className="font-bold text-lg mb-2 border-b border-slate-200 pb-2">بيانات العميل</h3>
             <div className="flex flex-col gap-2 text-sm">
                 <p><strong>الاسم:</strong> {selectedOrder.customerName}</p>
                 <p><strong>الهاتف:</strong> {selectedOrder.phone}</p>
@@ -94,16 +94,16 @@ const OrderHistoryModal: React.FC<OrderHistoryModalProps> = ({ isOpen, onClose }
         <h3 className="font-bold text-lg mb-2">المنتجات</h3>
         <div className="space-y-2">
             {selectedOrder.items.map(item => (
-                <div key={item.id} className="flex items-center gap-3 bg-slate-700/50 p-2 rounded-lg">
+                <div key={item.id} className="flex items-center gap-3 bg-slate-50 p-2 rounded-lg">
                     <img src={item.image} alt={item.name} className="w-12 h-12 rounded-md object-cover" />
                     <div className="flex-grow">
                         <p className="font-bold text-sm">{item.name}</p>
-                        <p className="text-xs text-slate-400">{item.quantity} x {
+                        <p className="text-xs text-slate-500">{item.quantity} x {
                             // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
                             item.price.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
                         } درهم</p>
                     </div>
-                    <p className="font-bold text-amber-400 text-sm">{
+                    <p className="font-bold text-amber-500 text-sm">{
                         // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
                         (item.price * item.quantity).toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
                     } درهم</p>
@@ -111,7 +111,7 @@ const OrderHistoryModal: React.FC<OrderHistoryModalProps> = ({ isOpen, onClose }
             ))}
         </div>
         {/* Total */}
-        <div className="mt-4 pt-4 border-t border-slate-700 flex justify-between items-center">
+        <div className="mt-4 pt-4 border-t border-slate-200 flex justify-between items-center">
             <p className="text-lg font-bold">الإجمالي:</p>
             <p className="text-2xl font-black text-amber-500">{
                 // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
@@ -124,11 +124,11 @@ const OrderHistoryModal: React.FC<OrderHistoryModalProps> = ({ isOpen, onClose }
 
   return (
     <div className={`fixed inset-0 bg-black/70 flex justify-center items-center p-4 z-50 transition-opacity duration-300 ${modalClasses}`}>
-      <div className={`bg-slate-800 text-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col transition-all duration-300 ${contentClasses}`}>
-        <div className="flex justify-between items-center p-4 border-b border-slate-700">
+      <div className={`bg-white text-slate-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col transition-all duration-300 ${contentClasses}`}>
+        <div className="flex justify-between items-center p-4 border-b border-slate-200">
           <div className="flex items-center gap-3">
              {selectedOrder && (
-                <button onClick={handleBackToList} className="p-2 rounded-full hover:bg-slate-700 transition-colors">
+                <button onClick={handleBackToList} className="p-2 rounded-full hover:bg-slate-100 transition-colors">
                     <BackIcon />
                 </button>
             )}
@@ -136,7 +136,7 @@ const OrderHistoryModal: React.FC<OrderHistoryModalProps> = ({ isOpen, onClose }
                 {selectedOrder ? `تفاصيل الطلب #${selectedOrder.id}` : 'سجل الطلبات'}
             </h2>
           </div>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-700 transition-colors"><CloseIcon /></button>
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-100 transition-colors"><CloseIcon /></button>
         </div>
 
         <div className="flex-grow p-4 overflow-y-auto">

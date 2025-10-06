@@ -518,10 +518,10 @@ ${confirmedOrder.items.map(item => `- ${item.name}${item.sku ? ` (SKU: ${item.sk
 
   return (
     <div className={`fixed inset-0 bg-black/70 flex justify-center items-center p-4 z-50 transition-opacity duration-300 ${modalClasses}`}>
-      <div className={`bg-slate-800 text-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col transition-all duration-300 ${contentClasses}`}>
-        <div className="flex justify-between items-center p-4 border-b border-slate-700">
+      <div className={`bg-white text-slate-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col transition-all duration-300 ${contentClasses}`}>
+        <div className="flex justify-between items-center p-4 border-b border-slate-200">
           <h2 className="text-xl font-bold text-amber-500">{orderSuccess ? 'تم تأكيد الطلب' : 'سلة التسوق'}</h2>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-700 transition-colors"><CloseIcon /></button>
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-100 transition-colors"><CloseIcon /></button>
         </div>
 
         {orderSuccess ? (
@@ -530,13 +530,13 @@ ${confirmedOrder.items.map(item => `- ${item.name}${item.sku ? ` (SKU: ${item.sk
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <h3 className="text-2xl font-bold">شكراً لك!</h3>
-                <p className="text-slate-300">لقد تم استلام طلبك وسنتواصل معك قريباً. رقم طلبك هو: <span className="font-bold text-amber-400">{confirmedOrder?.id}</span></p>
+                <p className="text-slate-600">لقد تم استلام طلبك وسنتواصل معك قريباً. رقم طلبك هو: <span className="font-bold text-amber-500">{confirmedOrder?.id}</span></p>
                 <div className="flex flex-col sm:flex-row gap-3 mt-4 w-full max-w-sm">
                    <button onClick={handlePrint} className="flex-1 bg-sky-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-sky-500 transition-colors flex items-center justify-center gap-2">
                       <PrintIcon />
                       طباعة الفاتورة
                    </button>
-                   <button onClick={handleSendWhatsApp} disabled={isProcessing} className="flex-1 bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-500 transition-colors flex items-center justify-center gap-2 disabled:bg-slate-600 disabled:cursor-not-allowed">
+                   <button onClick={handleSendWhatsApp} disabled={isProcessing} className="flex-1 bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-500 transition-colors flex items-center justify-center gap-2 disabled:bg-slate-400 disabled:cursor-not-allowed">
                       <WhatsAppIcon />
                       {isProcessing ? 'جاري التجهيز...' : 'إرسال عبر واتساب'}
                    </button>
@@ -547,36 +547,36 @@ ${confirmedOrder.items.map(item => `- ${item.name}${item.sku ? ` (SKU: ${item.sk
             <>
                 <div className="flex-grow p-4 overflow-y-auto">
                     {cartItems.length === 0 ? (
-                    <p className="text-center text-slate-400 py-10">سلتك فارغة.</p>
+                    <p className="text-center text-slate-500 py-10">سلتك فارغة.</p>
                     ) : (
                     <>
                         {/* Items */}
                         <div className="space-y-3">
                             {cartItems.map(item => (
-                                <div key={item.id} className="flex items-center gap-4 bg-slate-700/50 p-2 rounded-lg">
+                                <div key={item.id} className="flex items-center gap-4 bg-slate-50 p-2 rounded-lg">
                                 <img src={item.image} alt={item.name} className="w-16 h-16 rounded-md object-cover" />
                                 <div className="flex-grow">
                                     <p className="font-bold">{item.name}</p>
-                                    <p className="text-sm text-amber-400">{
+                                    <p className="text-sm text-amber-500">{
                                         // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
                                         item.price.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
                                     } درهم</p>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="p-1 rounded-full bg-slate-600 hover:bg-amber-500"><PlusIcon size={16}/></button>
+                                    <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="p-1 rounded-full bg-slate-200 hover:bg-amber-500 hover:text-white transition-colors"><PlusIcon size={16}/></button>
                                     <span className="w-8 text-center font-bold">{item.quantity}</span>
-                                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="p-1 rounded-full bg-slate-600 hover:bg-amber-500"><MinusIcon size={16}/></button>
+                                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="p-1 rounded-full bg-slate-200 hover:bg-amber-500 hover:text-white transition-colors"><MinusIcon size={16}/></button>
                                 </div>
                                 <p className="w-24 text-start font-bold">{
                                     // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
                                     (item.price * item.quantity).toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
                                 } درهم</p>
-                                <button onClick={() => removeFromCart(item.id)} className="text-red-500 hover:text-red-400 p-2"><TrashIcon /></button>
+                                <button onClick={() => removeFromCart(item.id)} className="text-red-500 hover:text-red-400 p-2 transition-colors"><TrashIcon /></button>
                                 </div>
                             ))}
                         </div>
                         {/* Total */}
-                        <div className="mt-6 pt-4 border-t border-slate-700 flex justify-between items-center">
+                        <div className="mt-6 pt-4 border-t border-slate-200 flex justify-between items-center">
                             <p className="text-lg font-bold">الإجمالي:</p>
                             <p className="text-2xl font-black text-amber-500">{
                                 // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
@@ -584,19 +584,19 @@ ${confirmedOrder.items.map(item => `- ${item.name}${item.sku ? ` (SKU: ${item.sk
                             } درهم</p>
                         </div>
                         {/* Customer Form */}
-                        <div className="mt-6 pt-4 border-t border-slate-700 space-y-3">
+                        <div className="mt-6 pt-4 border-t border-slate-200 space-y-3">
                             <h3 className="font-bold text-lg">بيانات العميل</h3>
                             <div>
-                                <label htmlFor="customerName" className="block text-sm font-medium text-slate-300 mb-1">الاسم</label>
-                                <input type="text" id="customerName" value={customerName} onChange={e => setCustomerName(e.target.value)} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                                <label htmlFor="customerName" className="block text-sm font-medium text-slate-600 mb-1">الاسم</label>
+                                <input type="text" id="customerName" value={customerName} onChange={e => setCustomerName(e.target.value)} className="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 text-slate-900" />
                             </div>
                             <div>
-                                <label htmlFor="phone" className="block text-sm font-medium text-slate-300 mb-1">رقم الهاتف</label>
-                                <input type="tel" id="phone" value={phone} onChange={e => setPhone(e.target.value)} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                                <label htmlFor="phone" className="block text-sm font-medium text-slate-600 mb-1">رقم الهاتف</label>
+                                <input type="tel" id="phone" value={phone} onChange={e => setPhone(e.target.value)} className="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 text-slate-900" />
                             </div>
                             <div>
-                                <label htmlFor="address" className="block text-sm font-medium text-slate-300 mb-1">العنوان</label>
-                                <input type="text" id="address" value={address} onChange={e => setAddress(e.target.value)} className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                                <label htmlFor="address" className="block text-sm font-medium text-slate-600 mb-1">العنوان</label>
+                                <input type="text" id="address" value={address} onChange={e => setAddress(e.target.value)} className="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 text-slate-900" />
                             </div>
                         </div>
                     </>
@@ -604,8 +604,8 @@ ${confirmedOrder.items.map(item => `- ${item.name}${item.sku ? ` (SKU: ${item.sk
                 </div>
 
                 {cartItems.length > 0 && (
-                    <div className="p-4 border-t border-slate-700 flex flex-col sm:flex-row gap-3">
-                        <button onClick={handleConfirmOrder} disabled={isProcessing} className="flex-1 bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-500 transition-colors disabled:bg-slate-600 disabled:cursor-not-allowed">
+                    <div className="p-4 border-t border-slate-200 flex flex-col sm:flex-row gap-3">
+                        <button onClick={handleConfirmOrder} disabled={isProcessing} className="flex-1 bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-500 transition-colors disabled:bg-slate-400 disabled:cursor-not-allowed">
                             {isProcessing ? 'جاري التأكيد...' : 'تأكيد الطلب'}
                         </button>
                         <button onClick={handlePrint} className="flex-1 bg-sky-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-sky-500 transition-colors flex items-center justify-center gap-2">
