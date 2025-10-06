@@ -40,7 +40,7 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
       <div className="p-4 flex flex-col flex-grow">
         <h3 className="text-lg font-bold text-slate-800">{product.name}</h3>
         {product.piecesPerCarton && (
-          <p className="text-xs text-sky-600 mt-1">
+          <p className="text-sm text-sky-600 mt-1">
             (كرتون : {product.piecesPerCarton} قطعة)
           </p>
         )}
