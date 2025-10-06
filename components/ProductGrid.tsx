@@ -1,4 +1,5 @@
 
+
 import React, { useContext, useState } from 'react';
 import { Product } from '../types';
 import { CartContext } from '../App';
@@ -54,7 +55,7 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
         <div className="mt-auto pt-4 border-t border-slate-200/80">
           <div className="flex justify-between items-center mb-3">
               <p className="text-sm text-slate-600">السعر:</p>
-              <p className="text-xl font-black text-amber-500">{
+              <p className="text-xl font-black text-red-600">{
                 // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
                 product.price.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
               } <span className="text-sm">درهم</span></p>
@@ -66,12 +67,12 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
               onChange={handleQuantityChange}
               min="1"
               placeholder="كمية"
-              className="w-[70%] bg-slate-100 border border-slate-300 text-slate-900 rounded-md text-center py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
+              className="w-[70%] bg-slate-100 border border-slate-300 text-slate-900 rounded-md text-center py-2 focus:outline-none focus:ring-2 focus:ring-red-600"
               aria-label="الكمية"
             />
             <button
               onClick={handleAddToCart}
-              className="w-[30%] bg-amber-500 text-slate-900 font-bold py-2 px-3 rounded-lg flex items-center justify-center gap-2 transform transition-transform duration-200 group-hover:bg-amber-400 active:scale-95"
+              className="w-[30%] bg-red-600 text-white font-bold py-2 px-3 rounded-lg flex items-center justify-center gap-2 transform transition-transform duration-200 group-hover:bg-red-500 active:scale-95"
             >
               <PlusIcon />
               <span>أضف</span>

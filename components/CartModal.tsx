@@ -1,3 +1,4 @@
+
 import React, { useContext, useState, useEffect } from 'react';
 import { CartContext } from '../App';
 import { OrderDetails, CartItem, ConfirmedOrder } from '../types';
@@ -176,7 +177,7 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                border-bottom: 4px solid #f59e0b;
+                border-bottom: 4px solid #CC0115;
                 padding-bottom: 10px;
                 margin-bottom: 30px;
             }
@@ -336,7 +337,7 @@ ${confirmedOrder.items.map(item => `- ${item.name}${item.sku ? ` (SKU: ${item.sk
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                border-bottom: 4px solid #f59e0b; /* amber-500 */
+                border-bottom: 4px solid #CC0115; /* red-600 */
                 padding-bottom: 10px;
                 margin-bottom: 30px;
             }
@@ -520,7 +521,7 @@ ${confirmedOrder.items.map(item => `- ${item.name}${item.sku ? ` (SKU: ${item.sk
     <div className={`fixed inset-0 bg-black/70 flex justify-center items-center p-4 z-50 transition-opacity duration-300 ${modalClasses}`}>
       <div className={`bg-white text-slate-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col transition-all duration-300 ${contentClasses}`}>
         <div className="flex justify-between items-center p-4 border-b border-slate-200">
-          <h2 className="text-xl font-bold text-amber-500">{orderSuccess ? 'تم تأكيد الطلب' : 'سلة التسوق'}</h2>
+          <h2 className="text-xl font-bold text-red-600">{orderSuccess ? 'تم تأكيد الطلب' : 'سلة التسوق'}</h2>
           <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-100 transition-colors"><CloseIcon /></button>
         </div>
 
@@ -530,7 +531,7 @@ ${confirmedOrder.items.map(item => `- ${item.name}${item.sku ? ` (SKU: ${item.sk
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <h3 className="text-2xl font-bold">شكراً لك!</h3>
-                <p className="text-slate-600">لقد تم استلام طلبك وسنتواصل معك قريباً. رقم طلبك هو: <span className="font-bold text-amber-500">{confirmedOrder?.id}</span></p>
+                <p className="text-slate-600">لقد تم استلام طلبك وسنتواصل معك قريباً. رقم طلبك هو: <span className="font-bold text-red-600">{confirmedOrder?.id}</span></p>
                 <div className="flex flex-col sm:flex-row gap-3 mt-4 w-full max-w-sm">
                    <button onClick={handlePrint} className="flex-1 bg-sky-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-sky-500 transition-colors flex items-center justify-center gap-2">
                       <PrintIcon />
@@ -540,7 +541,7 @@ ${confirmedOrder.items.map(item => `- ${item.name}${item.sku ? ` (SKU: ${item.sk
                       <WhatsAppIcon />
                       {isProcessing ? 'جاري التجهيز...' : 'إرسال عبر واتساب'}
                    </button>
-                   <button onClick={onClose} className="flex-1 bg-amber-500 text-slate-900 font-bold py-3 px-4 rounded-lg hover:bg-amber-400 transition-colors">إغلاق</button>
+                   <button onClick={onClose} className="flex-1 bg-red-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-500 transition-colors">إغلاق</button>
                 </div>
             </div>
         ) : (
@@ -557,15 +558,15 @@ ${confirmedOrder.items.map(item => `- ${item.name}${item.sku ? ` (SKU: ${item.sk
                                 <img src={item.image} alt={item.name} className="w-16 h-16 rounded-md object-cover" />
                                 <div className="flex-grow">
                                     <p className="font-bold">{item.name}</p>
-                                    <p className="text-sm text-amber-500">{
+                                    <p className="text-sm text-red-600">{
                                         // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
                                         item.price.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
                                     } درهم</p>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="p-1 rounded-full bg-slate-200 hover:bg-amber-500 hover:text-white transition-colors"><PlusIcon size={16}/></button>
+                                    <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="p-1 rounded-full bg-slate-200 hover:bg-red-600 hover:text-white transition-colors"><PlusIcon size={16}/></button>
                                     <span className="w-8 text-center font-bold">{item.quantity}</span>
-                                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="p-1 rounded-full bg-slate-200 hover:bg-amber-500 hover:text-white transition-colors"><MinusIcon size={16}/></button>
+                                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="p-1 rounded-full bg-slate-200 hover:bg-red-600 hover:text-white transition-colors"><MinusIcon size={16}/></button>
                                 </div>
                                 <p className="w-24 text-start font-bold">{
                                     // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
@@ -578,7 +579,7 @@ ${confirmedOrder.items.map(item => `- ${item.name}${item.sku ? ` (SKU: ${item.sk
                         {/* Total */}
                         <div className="mt-6 pt-4 border-t border-slate-200 flex justify-between items-center">
                             <p className="text-lg font-bold">الإجمالي:</p>
-                            <p className="text-2xl font-black text-amber-500">{
+                            <p className="text-2xl font-black text-red-600">{
                                 // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
                                 cartTotal.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
                             } درهم</p>
@@ -588,15 +589,15 @@ ${confirmedOrder.items.map(item => `- ${item.name}${item.sku ? ` (SKU: ${item.sk
                             <h3 className="font-bold text-lg">بيانات العميل</h3>
                             <div>
                                 <label htmlFor="customerName" className="block text-sm font-medium text-slate-600 mb-1">الاسم</label>
-                                <input type="text" id="customerName" value={customerName} onChange={e => setCustomerName(e.target.value)} className="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 text-slate-900" />
+                                <input type="text" id="customerName" value={customerName} onChange={e => setCustomerName(e.target.value)} className="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-600 text-slate-900" />
                             </div>
                             <div>
                                 <label htmlFor="phone" className="block text-sm font-medium text-slate-600 mb-1">رقم الهاتف</label>
-                                <input type="tel" id="phone" value={phone} onChange={e => setPhone(e.target.value)} className="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 text-slate-900" />
+                                <input type="tel" id="phone" value={phone} onChange={e => setPhone(e.target.value)} className="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-600 text-slate-900" />
                             </div>
                             <div>
                                 <label htmlFor="address" className="block text-sm font-medium text-slate-600 mb-1">العنوان</label>
-                                <input type="text" id="address" value={address} onChange={e => setAddress(e.target.value)} className="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 text-slate-900" />
+                                <input type="text" id="address" value={address} onChange={e => setAddress(e.target.value)} className="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-600 text-slate-900" />
                             </div>
                         </div>
                     </>

@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { ConfirmedOrder } from '../types';
 import { fetchOrderHistory as mockFetchOrderHistory } from '../services/mockApi';
@@ -53,7 +54,7 @@ const OrderHistoryModal: React.FC<OrderHistoryModalProps> = ({ isOpen, onClose }
               className="flex justify-between items-center gap-4 bg-slate-50 p-4 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors"
             >
               <div>
-                <p className="font-bold text-amber-400">{order.id}</p>
+                <p className="font-bold text-red-500">{order.id}</p>
                 <p className="text-sm text-slate-500">
                   {
                     // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
@@ -103,7 +104,7 @@ const OrderHistoryModal: React.FC<OrderHistoryModalProps> = ({ isOpen, onClose }
                             item.price.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
                         } درهم</p>
                     </div>
-                    <p className="font-bold text-amber-500 text-sm">{
+                    <p className="font-bold text-red-600 text-sm">{
                         // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
                         (item.price * item.quantity).toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
                     } درهم</p>
@@ -113,7 +114,7 @@ const OrderHistoryModal: React.FC<OrderHistoryModalProps> = ({ isOpen, onClose }
         {/* Total */}
         <div className="mt-4 pt-4 border-t border-slate-200 flex justify-between items-center">
             <p className="text-lg font-bold">الإجمالي:</p>
-            <p className="text-2xl font-black text-amber-500">{
+            <p className="text-2xl font-black text-red-600">{
                 // Fix: Cast Intl options to 'any' to allow 'numberingSystem' which is not in the default TS lib definition.
                 selectedOrder.total.toLocaleString('ar-EG', { numberingSystem: 'latn' } as any)
             } درهم</p>
@@ -132,7 +133,7 @@ const OrderHistoryModal: React.FC<OrderHistoryModalProps> = ({ isOpen, onClose }
                     <BackIcon />
                 </button>
             )}
-            <h2 className="text-xl font-bold text-amber-500">
+            <h2 className="text-xl font-bold text-red-600">
                 {selectedOrder ? `تفاصيل الطلب #${selectedOrder.id}` : 'سجل الطلبات'}
             </h2>
           </div>

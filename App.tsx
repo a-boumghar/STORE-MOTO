@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Product, CartItem } from './types';
 import { fetchProducts as mockFetchProducts } from './services/mockApi';
@@ -115,7 +116,7 @@ function App() {
               placeholder="ابحث عن المنتج"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="w-full md:w-1/2 bg-white border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all text-slate-900"
+              className="w-full md:w-1/2 bg-white border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-600 transition-all text-slate-900"
             />
             <div className="flex-grow flex items-center gap-2 overflow-x-auto pb-2">
               {categories.map(category => (
@@ -124,7 +125,7 @@ function App() {
                   onClick={() => setSelectedCategory(category)}
                   className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors whitespace-nowrap ${
                     selectedCategory === category
-                      ? 'bg-amber-500 text-slate-900'
+                      ? 'bg-red-600 text-white'
                       : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-300'
                   }`}
                 >
