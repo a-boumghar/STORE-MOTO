@@ -105,8 +105,10 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
     const invoiceHtml = `
         <div class="invoice-container">
             <div class="invoice-header">
-              <h1 class="brand-name">MOTORINO</h1>
-              <div class="invoice-title">فاتورة طلب ${orderId ? `#${orderId}` : ''}</div>
+              <img src="https://i.ibb.co/XfBfNLv5/all-logo-brand-copy-png.png" alt="MOTORINO Logo" style="height: 50px; object-fit: contain;" />
+            </div>
+            <div class="invoice-title-container">
+              <h2 class="invoice-title">فاتورة طلب</h2>
             </div>
             <div class="invoice-details">
               <div class="customer-info">
@@ -177,21 +179,25 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
             }
             .invoice-header {
                 display: flex;
-                justify-content: space-between;
+                justify-content: center;
                 align-items: center;
                 border-bottom: 4px solid #CC0115;
                 padding-bottom: 10px;
-                margin-bottom: 30px;
+                margin-bottom: 20px;
             }
             .brand-name {
                 font-size: 2.25rem;
                 font-weight: 900;
                 color: #1e293b;
             }
+            .invoice-title-container {
+                text-align: center;
+                margin-bottom: 30px;
+            }
             .invoice-title {
-                font-size: 1.5rem;
+                font-size: 1.8rem;
                 font-weight: 700;
-                color: #64748b;
+                color: #1e293b;
             }
             .invoice-details {
                 display: flex;
@@ -337,21 +343,25 @@ ${confirmedOrder.items.map(item => `- ${item.name}${item.sku ? ` (SKU: ${item.sk
             }
             .invoice-header {
                 display: flex;
-                justify-content: space-between;
+                justify-content: center;
                 align-items: center;
                 border-bottom: 4px solid #CC0115; /* red-600 */
                 padding-bottom: 10px;
-                margin-bottom: 30px;
+                margin-bottom: 20px;
             }
             .brand-name {
                 font-size: 2.25rem;
                 font-weight: 900;
                 color: #1e293b; /* slate-800 */
             }
+            .invoice-title-container {
+                text-align: center;
+                margin-bottom: 30px;
+            }
             .invoice-title {
-                font-size: 1.5rem;
+                font-size: 1.8rem;
                 font-weight: 700;
-                color: #64748b; /* slate-500 */
+                color: #1e293b; /* slate-800 */
             }
             .invoice-details {
                 display: flex;
@@ -424,8 +434,10 @@ ${confirmedOrder.items.map(item => `- ${item.name}${item.sku ? ` (SKU: ${item.sk
         <body>
           <div class="invoice-container">
             <div class="invoice-header">
-              <h1 class="brand-name">MOTORINO</h1>
-              <div class="invoice-title">فاتورة طلب</div>
+              <img src="https://i.ibb.co/XfBfNLv5/all-logo-brand-copy-png.png" alt="MOTORINO Logo" style="height: 50px; object-fit: contain;" />
+            </div>
+            <div class="invoice-title-container">
+                <h2 class="invoice-title">فاتورة طلب</h2>
             </div>
             <div class="invoice-details">
               <div class="customer-info">
@@ -473,7 +485,7 @@ ${confirmedOrder.items.map(item => `- ${item.name}${item.sku ? ` (SKU: ${item.sk
     document.body.appendChild(container);
 
     try {
-        const canvas = await html2canvas(container, { scale: 2 });
+        const canvas = await html2canvas(container, { scale: 2, useCORS: true });
         const imgData = canvas.toDataURL('image/jpeg', 0.9);
         const { jsPDF } = jspdf;
         const pdf = new jsPDF({
