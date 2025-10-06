@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Product, CartItem } from './types';
 import { fetchProducts as mockFetchProducts } from './services/mockApi';
 import Header from './components/Header';
 import ProductGrid from './components/ProductGrid';
 import CartModal from './components/CartModal';
-import OrderHistoryModal from './components/OrderHistoryModal';
+import FloatingCartButton from './components/FloatingCartButton';
 
 export const CartContext = React.createContext<{
   cartItems: CartItem[];
@@ -25,7 +24,6 @@ function App() {
   const [selectedCategory, setSelectedCategory] = useState('الكل');
   const [isLoading, setIsLoading] = useState(true);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   useEffect(() => {
@@ -109,11 +107,7 @@ function App() {
   return (
     <CartContext.Provider value={cartContextValue}>
       <div className="bg-slate-900 text-white min-h-screen">
-        <Header 
-          onCartClick={() => setIsCartOpen(true)}
-          onHistoryClick={() => setIsHistoryOpen(true)}
-          cartItemCount={cartItems.reduce((sum, item) => sum + item.quantity, 0)}
-        />
+        <Header />
         <main className="container mx-auto px-4 py-8">
           <div className="mb-8 flex flex-col md:flex-row gap-4">
             <input
@@ -147,8 +141,8 @@ function App() {
           )}
         </main>
 
+        <FloatingCartButton onClick={() => setIsCartOpen(true)} />
         <CartModal isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
-        <OrderHistoryModal isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} />
       </div>
     </CartContext.Provider>
   );
