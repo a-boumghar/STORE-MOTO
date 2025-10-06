@@ -25,7 +25,26 @@ function App() {
   const [selectedCategory, setSelectedCategory] = useState('الكل');
   const [isLoading, setIsLoading] = useState(true);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  
+  // Initialize cart from localStorage
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
+    try {
+      const savedCart = localStorage.getItem('motorino-cart');
+      return savedCart ? JSON.parse(savedCart) : [];
+    } catch (error) {
+      console.error("Failed to parse cart from localStorage", error);
+      return [];
+    }
+  });
+
+  // Persist cart to localStorage on change
+  useEffect(() => {
+    try {
+      localStorage.setItem('motorino-cart', JSON.stringify(cartItems));
+    } catch (error) {
+      console.error("Failed to save cart to localStorage", error);
+    }
+  }, [cartItems]);
 
   useEffect(() => {
     const loadProducts = async () => {
