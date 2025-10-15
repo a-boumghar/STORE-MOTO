@@ -59,7 +59,7 @@ export interface InvoicePayload {
 
 // Fetches products from a Google Sheet Web App
 export const fetchProducts = async (): Promise<Product[]> => {
-  const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwQp95Xkwvzlu1a4NQpmPU5YO91m0IN0xLv1Ue_SVpKajbgm87ilInmAzZbdOMNn9i2/exec';
+  const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbx2xYsiALW3gBYxvWc4uBlELxmoKCI3H-BqgMTn2HdFAxmZjXtViYmaqaiBfKti2RGHfg/exec';
 
   console.log('API: Fetching products from Google Sheet...');
   
