@@ -117,13 +117,14 @@ export const confirmOrder = (orderDetails: OrderDetails): Promise<{ success: boo
 export async function sendInvoiceToGoogleScript(order: InvoicePayload) {
   try {
     const response = await fetch(
-      "https://script.google.com/macros/s/AKfycbyRdvDFWUivEFm4TX2xqHIdetUIsYR-HeAlrWLps_2WWOCucO3mkH5c11AZdo7DnXch/exec",
+      "https://script.google.com/macros/s/AKfycbx6Q8Z0HwtZdFhQLaV6LJWPYYhubxrNn-p7p-luw4pbCO6mF1vG2iAkrfPrXb03lHDE/exec",
       {
         method: "POST",
-        headers: {
-          // Use text/plain to avoid CORS preflight request
-          "Content-Type": "text/plain;charset=utf-8",
-        },
+        // No Content-Type header. The browser will set text/plain for the string body.
+        // This creates a "simple request" and avoids a CORS preflight.
+        // This setting is crucial. It tells fetch to throw an error if the server
+        // tries to redirect, which is exactly what a misconfigured Apps Script does.
+        redirect: 'error', 
         body: JSON.stringify({ order }),
       }
     );
@@ -135,40 +136,55 @@ export async function sendInvoiceToGoogleScript(order: InvoicePayload) {
       alert("Invoice sent to stemotorino@gmail.com ✅");
     } else {
       console.error("❌ Sending failed:", result.error || result);
-      alert("⚠️ Error sending invoice. Check Google Apps Script configuration.");
+      alert(`⚠️ Error sending invoice: ${result.error || 'Unknown error. Check Apps Script logs.'}`);
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("🚨 Connection error:", error);
-    alert(
-      "🚨 Connection Error: Failed to fetch.\n\n" +
-      "This is a common CORS issue with Google Apps Script. This app is now correctly sending data as 'text/plain' to avoid it.\n\n" +
-      "▶️ ACTION REQUIRED: Update your Google Apps Script `doPost` function to the code below and create a NEW deployment.\n\n" +
-      "// ---- COPY THIS CODE TO YOUR SCRIPT ----\n" +
-      "function doPost(e) {\n" +
-      "  try {\n" +
-      "    var data = JSON.parse(e.postData.contents);\n" +
-      "    var order = data.order;\n\n" +
-      "    // Your invoice & email logic here...\n\n" +
-      "    var response = {\n" +
-      "      success: true,\n" +
-      "      message: 'Invoice for order ' + order.id + ' processed.'\n" +
-      "    };\n\n" +
-      "    return ContentService\n" +
-      "      .createTextOutput(JSON.stringify(response))\n" +
-      "      .setMimeType(ContentService.MimeType.JSON);\n\n" +
-      "  } catch (error) {\n" +
-      "    var errorResponse = {\n" +
-      "      success: false,\n" +
-      "      error: error.message\n" +
-      "    };\n" +
-      "    return ContentService\n" +
-      "      .createTextOutput(JSON.stringify(errorResponse))\n" +
-      "      .setMimeType(ContentService.MimeType.JSON);\n" +
-      "  }\n" +
-      "}\n" +
-      "// ---- END OF CODE ----\n\n" +
-      "IMPORTANT: After updating, go to Deploy > New deployment to apply changes."
-    );
+
+    const isRedirectError = error.type === 'opaqueredirect' || (error.message && error.message.includes('redirect'));
+
+    const detailedErrorMessage =
+      "🚨 **'Failed to Fetch' Error - ACTION REQUIRED** 🚨\n\n" +
+      "This is a **Google Apps Script configuration error**, not a bug in this app.\n\n" +
+      (isRedirectError ? "**Error Cause:** Redirect detected. Your script's `doPost(e)` function is not returning a `ContentService` response, causing Google to redirect, which is blocked by the browser.\n\n" : "") +
+      "➡️ **TO FIX THIS, YOU MUST DO THE FOLLOWING:**\n\n" +
+      "**STEP 1: UPDATE YOUR SCRIPT CODE**\n" +
+      "   - Open your Google Apps Script project.\n" +
+      "   - Replace your entire `doPost(e)` function with this exact code:\n\n" +
+      "   ```\n" +
+      "   function doPost(e) {\n" +
+      "     try {\n" +
+      "       // The app sends data as a text string, so we must parse it.\n" +
+      "       var data = JSON.parse(e.postData.contents);\n" +
+      "       var order = data.order;\n\n" +
+      "       // --- YOUR INVOICE AND EMAIL LOGIC GOES HERE ---\n\n" +
+      "       var response = {\n" +
+      "         success: true,\n" +
+      "         message: \"Invoice for order \" + order.id + \" processed successfully.\"\n" +
+      "       };\n\n" +
+      "       // This part is CRUCIAL. It sends a valid JSON response back.\n" +
+      "       return ContentService\n" +
+      "         .createTextOutput(JSON.stringify(response))\n" +
+      "         .setMimeType(ContentService.MimeType.JSON);\n\n" +
+      "     } catch (err) {\n" +
+      "       var errorResponse = {\n" +
+      "         success: false,\n" +
+      "         error: \"Script Error: \" + err.message\n" +
+      "       };\n" +
+      "       return ContentService\n" +
+      "         .createTextOutput(JSON.stringify(errorResponse))\n" +
+      "         .setMimeType(ContentService.MimeType.JSON);\n" +
+      "     }\n" +
+      "   }\n" +
+      "   ```\n\n" +
+      "**STEP 2: CREATE A NEW DEPLOYMENT (VERY IMPORTANT!)**\n" +
+      "   - In your script, click **Deploy > New deployment**.\n" +
+      "   - Make sure \"Who has access\" is set to **Anyone**.\n" +
+      "   - Click **Deploy**.\n\n" +
+      "⚠️ **If you skip Step 2, your changes will not take effect!** You must create a new deployment every time you change the code.";
+
+
+    alert(detailedErrorMessage);
   }
 }
 
