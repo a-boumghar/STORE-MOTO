@@ -57,16 +57,31 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
           setConfirmedOrder(result.order);
           clearCart();
 
-          // Automatically send invoice email to the business owner
-          /*
-          mockSendInvoiceByEmail(result.order, 'stemotorino@gmail.com')
-            .then(() => {
-                console.log(`Invoice for order ${result.order.id} sent automatically to business owner.`);
-            })
-            .catch((error) => {
-                console.error(`Failed to automatically send invoice email for order ${result.order.id}:`, error);
-            });
-          */
+          // إرسال الفاتورة مباشرة إلى بريدك عبر Google Apps Script
+const scriptUrl = "https://script.google.com/macros/s/AKfycbyRdvDFWUivEFm4TX2xqHIdetUIsYR-HeAlrWLps_2WWOCucO3mkH5c11AZdo7DnXch/exec";
+
+fetch(scriptUrl, {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+        order: result.order,
+        email: "stemotorino@gmail.com"
+    }),
+})
+.then(response => response.json())
+.then(data => {
+    if(data.success){
+        console.log("تم إرسال الفاتورة بنجاح عبر Apps Script!");
+    } else {
+        console.error("حدث خطأ في Apps Script:", data.error);
+    }
+})
+.catch(error => {
+    console.error("فشل إرسال الفاتورة عبر Apps Script:", error);
+});
+
 
         } else {
           alert(`حدث خطأ: ${result.message}`);
