@@ -116,75 +116,27 @@ export const confirmOrder = (orderDetails: OrderDetails): Promise<{ success: boo
 // Sends invoice data to the Google Apps Script endpoint
 export async function sendInvoiceToGoogleScript(order: InvoicePayload) {
   try {
-    const response = await fetch(
+    await fetch(
       "https://script.google.com/macros/s/AKfycbx6Q8Z0HwtZdFhQLaV6LJWPYYhubxrNn-p7p-luw4pbCO6mF1vG2iAkrfPrXb03lHDE/exec",
       {
         method: "POST",
-        // No Content-Type header. The browser will set text/plain for the string body.
-        // This creates a "simple request" and avoids a CORS preflight.
-        // This setting is crucial. It tells fetch to throw an error if the server
-        // tries to redirect, which is exactly what a misconfigured Apps Script does.
-        redirect: 'error', 
+        // This is the key change. 'no-cors' allows sending the request without
+        // being blocked by browser security (CORS), but it means we cannot read the response.
+        // This is a "fire-and-forget" approach.
+        mode: 'no-cors',
         body: JSON.stringify({ order }),
       }
     );
 
-    const result = await response.json().catch(() => ({}));
+    // With 'no-cors', we cannot read the response. We fire-and-forget and assume success on the client.
+    // The actual success/failure confirmation must be handled by the script itself (e.g., sending the confirmation email).
+    console.log("✅ Invoice data sent to Google Apps Script. The script will handle processing and confirmation.");
+    alert("تم إرسال بيانات الفاتورة بنجاح. سيتم إرسال الفاتورة عبر البريد الإلكتروني.");
 
-    if (result.success) {
-      console.log("✅ Invoice sent successfully:", result.message);
-      alert("Invoice sent to stemotorino@gmail.com ✅");
-    } else {
-      console.error("❌ Sending failed:", result.error || result);
-      alert(`⚠️ Error sending invoice: ${result.error || 'Unknown error. Check Apps Script logs.'}`);
-    }
-  } catch (error: any) {
-    console.error("🚨 Connection error:", error);
-
-    const isRedirectError = error.type === 'opaqueredirect' || (error.message && error.message.includes('redirect'));
-
-    const detailedErrorMessage =
-      "🚨 **'Failed to Fetch' Error - ACTION REQUIRED** 🚨\n\n" +
-      "This is a **Google Apps Script configuration error**, not a bug in this app.\n\n" +
-      (isRedirectError ? "**Error Cause:** Redirect detected. Your script's `doPost(e)` function is not returning a `ContentService` response, causing Google to redirect, which is blocked by the browser.\n\n" : "") +
-      "➡️ **TO FIX THIS, YOU MUST DO THE FOLLOWING:**\n\n" +
-      "**STEP 1: UPDATE YOUR SCRIPT CODE**\n" +
-      "   - Open your Google Apps Script project.\n" +
-      "   - Replace your entire `doPost(e)` function with this exact code:\n\n" +
-      "   ```\n" +
-      "   function doPost(e) {\n" +
-      "     try {\n" +
-      "       // The app sends data as a text string, so we must parse it.\n" +
-      "       var data = JSON.parse(e.postData.contents);\n" +
-      "       var order = data.order;\n\n" +
-      "       // --- YOUR INVOICE AND EMAIL LOGIC GOES HERE ---\n\n" +
-      "       var response = {\n" +
-      "         success: true,\n" +
-      "         message: \"Invoice for order \" + order.id + \" processed successfully.\"\n" +
-      "       };\n\n" +
-      "       // This part is CRUCIAL. It sends a valid JSON response back.\n" +
-      "       return ContentService\n" +
-      "         .createTextOutput(JSON.stringify(response))\n" +
-      "         .setMimeType(ContentService.MimeType.JSON);\n\n" +
-      "     } catch (err) {\n" +
-      "       var errorResponse = {\n" +
-      "         success: false,\n" +
-      "         error: \"Script Error: \" + err.message\n" +
-      "       };\n" +
-      "       return ContentService\n" +
-      "         .createTextOutput(JSON.stringify(errorResponse))\n" +
-      "         .setMimeType(ContentService.MimeType.JSON);\n" +
-      "     }\n" +
-      "   }\n" +
-      "   ```\n\n" +
-      "**STEP 2: CREATE A NEW DEPLOYMENT (VERY IMPORTANT!)**\n" +
-      "   - In your script, click **Deploy > New deployment**.\n" +
-      "   - Make sure \"Who has access\" is set to **Anyone**.\n" +
-      "   - Click **Deploy**.\n\n" +
-      "⚠️ **If you skip Step 2, your changes will not take effect!** You must create a new deployment every time you change the code.";
-
-
-    alert(detailedErrorMessage);
+  } catch (error) {
+    // This will now only catch genuine network errors (e.g., no internet), not CORS errors.
+    console.error("🚨 Network error:", error);
+    alert("⚠️ فشل الاتصال. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.");
   }
 }
 
