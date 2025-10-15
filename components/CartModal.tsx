@@ -1,9 +1,8 @@
-
 import React, { useContext, useState, useEffect } from 'react';
 import { CartContext } from '../App';
 import { OrderDetails, CartItem, ConfirmedOrder } from '../types';
 import { CloseIcon, PrintIcon, PlusIcon, MinusIcon, TrashIcon, WhatsAppIcon } from './Icons';
-import { confirmOrder as mockConfirmOrder, sendInvoiceByEmail as mockSendInvoiceByEmail } from '../services/mockApi';
+import { confirmOrder as mockConfirmOrder, sendInvoiceToGoogleScript } from '../services/mockApi';
 
 // Declarations for CDN libraries
 declare const html2canvas: any;
@@ -57,38 +56,30 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
           setConfirmedOrder(result.order);
           clearCart();
 
-          // إرسال الفاتورة مباشرة إلى بريدك عبر Google Apps Script
-const scriptUrl = "https://script.google.com/macros/s/AKfycbyRdvDFWUivEFm4TX2xqHIdetUIsYR-HeAlrWLps_2WWOCucO3mkH5c11AZdo7DnXch/exec";
-
-fetch(scriptUrl, {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-        order: result.order,
-        email: "stemotorino@gmail.com"
-    }),
-})
-.then(response => response.json())
-.then(data => {
-    if(data.success){
-        console.log("تم إرسال الفاتورة بنجاح عبر Apps Script!");
-    } else {
-        console.error("حدث خطأ في Apps Script:", data.error);
-    }
-})
-.catch(error => {
-    console.error("فشل إرسال الفاتورة عبر Apps Script:", error);
-});
-
-
+          // Sanitize order for the Apps Script payload
+          const sanitizedOrder = {
+              id: result.order.id,
+              customerName: result.order.customerName,
+              phone: result.order.phone,
+              address: result.order.address,
+              total: result.order.total,
+              items: result.order.items.map(item => ({
+                  name: item.name,
+                  quantity: item.quantity,
+                  price: item.price,
+              }))
+          };
+          
+          // Call the new, robust function to send the invoice.
+          // This replaces the old, complex fetch block.
+          await sendInvoiceToGoogleScript(sanitizedOrder);
+          
         } else {
-          alert(`حدث خطأ: ${result.message}`);
+          alert(`An error occurred: ${result.message}`);
         }
     } catch (error) {
         console.error("Error confirming order:", error);
-        alert('حدث خطأ غير متوقع عند تأكيد الطلب.');
+        alert('An unexpected error occurred while confirming the order.');
     } finally {
         setIsProcessing(false);
     }
@@ -101,7 +92,7 @@ fetch(scriptUrl, {
         : { items: cartItems, total: cartTotal, customerName, phone, address };
 
     if (printData.items.length === 0) {
-      alert('السلة فارغة، لا يمكن طباعة فاتورة.');
+      alert('The cart is empty, an invoice cannot be printed.');
       return;
     }
     
@@ -163,7 +154,7 @@ fetch(scriptUrl, {
 
     const printWindow = window.open('', '', 'height=800,width=800');
     if (!printWindow) {
-        alert('يرجى السماح بالنوافذ المنبثقة لطباعة الفاتورة.');
+        alert('Please allow pop-up windows to print the invoice.');
         return;
     }
     

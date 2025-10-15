@@ -46,6 +46,16 @@ const mockPastOrders: ConfirmedOrder[] = [
 // This simulates a database sequence. It starts after the existing mock orders.
 let lastOrderIdCounter = mockPastOrders.length;
 
+// This type matches the sanitized order payload for the invoice script
+export interface InvoicePayload {
+  id: string;
+  customerName: string;
+  phone: string;
+  address: string;
+  items: { name: string; quantity: number; price: number }[];
+  total: number;
+}
+
 
 // Fetches products from a Google Sheet Web App
 export const fetchProducts = async (): Promise<Product[]> => {
@@ -103,6 +113,66 @@ export const confirmOrder = (orderDetails: OrderDetails): Promise<{ success: boo
   });
 };
 
+// Sends invoice data to the Google Apps Script endpoint
+export async function sendInvoiceToGoogleScript(order: InvoicePayload) {
+  try {
+    const response = await fetch(
+      "https://script.google.com/macros/s/AKfycbyRdvDFWUivEFm4TX2xqHIdetUIsYR-HeAlrWLps_2WWOCucO3mkH5c11AZdo7DnXch/exec",
+      {
+        method: "POST",
+        headers: {
+          // Use text/plain to avoid CORS preflight request
+          "Content-Type": "text/plain;charset=utf-8",
+        },
+        body: JSON.stringify({ order }),
+      }
+    );
+
+    const result = await response.json().catch(() => ({}));
+
+    if (result.success) {
+      console.log("✅ Invoice sent successfully:", result.message);
+      alert("Invoice sent to stemotorino@gmail.com ✅");
+    } else {
+      console.error("❌ Sending failed:", result.error || result);
+      alert("⚠️ Error sending invoice. Check Google Apps Script configuration.");
+    }
+  } catch (error) {
+    console.error("🚨 Connection error:", error);
+    alert(
+      "🚨 Connection Error: Failed to fetch.\n\n" +
+      "This is a common CORS issue with Google Apps Script. This app is now correctly sending data as 'text/plain' to avoid it.\n\n" +
+      "▶️ ACTION REQUIRED: Update your Google Apps Script `doPost` function to the code below and create a NEW deployment.\n\n" +
+      "// ---- COPY THIS CODE TO YOUR SCRIPT ----\n" +
+      "function doPost(e) {\n" +
+      "  try {\n" +
+      "    var data = JSON.parse(e.postData.contents);\n" +
+      "    var order = data.order;\n\n" +
+      "    // Your invoice & email logic here...\n\n" +
+      "    var response = {\n" +
+      "      success: true,\n" +
+      "      message: 'Invoice for order ' + order.id + ' processed.'\n" +
+      "    };\n\n" +
+      "    return ContentService\n" +
+      "      .createTextOutput(JSON.stringify(response))\n" +
+      "      .setMimeType(ContentService.MimeType.JSON);\n\n" +
+      "  } catch (error) {\n" +
+      "    var errorResponse = {\n" +
+      "      success: false,\n" +
+      "      error: error.message\n" +
+      "    };\n" +
+      "    return ContentService\n" +
+      "      .createTextOutput(JSON.stringify(errorResponse))\n" +
+      "      .setMimeType(ContentService.MimeType.JSON);\n" +
+      "  }\n" +
+      "}\n" +
+      "// ---- END OF CODE ----\n\n" +
+      "IMPORTANT: After updating, go to Deploy > New deployment to apply changes."
+    );
+  }
+}
+
+
 // Simulates sending an invoice via email
 export const sendInvoiceByEmail = (order: ConfirmedOrder, recipientEmail: string): Promise<{ success: boolean; message: string }> => {
   console.log('Mock API: Sending invoice by email to:', recipientEmail, 'for order:', order);
@@ -129,3 +199,23 @@ export const fetchOrderHistory = (): Promise<ConfirmedOrder[]> => {
     }, 800);
   });
 };
+
+/*
+// Example usage for sendInvoiceToGoogleScript:
+
+const exampleOrder: InvoicePayload = {
+  id: "2031",
+  customerName: "Abdellah Boumghar",
+  phone: "+212612345678",
+  address: "Casablanca, Morocco",
+  items: [
+    { name: "Helmet", quantity: 1, price: 350 },
+    { name: "Motor Oil", quantity: 2, price: 120 },
+  ],
+  total: 590,
+};
+
+// This function is called from the CartModal component upon order confirmation.
+// sendInvoiceToGoogleScript(exampleOrder);
+
+*/
