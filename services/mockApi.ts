@@ -135,7 +135,8 @@ export async function sendInvoiceToGoogleScript(order: InvoicePayload) {
         name: item.name,
         quantity: item.quantity,
         price: item.price,
-        sku: (item.sku || item.SKU || item.id || 'N/A') // دعم مختلف الصيغ
+        // FIX: Corrected property access to only use `item.sku` as `item.SKU` and `item.id` do not exist on the type.
+        sku: item.sku || 'N/A'
       }))
     };
 

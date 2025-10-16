@@ -67,6 +67,7 @@ const CartModal: React.FC<CartModalProps> = ({ isOpen, onClose }) => {
                   name: item.name,
                   quantity: item.quantity,
                   price: item.price,
+                  sku: item.sku
               }))
           };
           
