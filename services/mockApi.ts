@@ -52,7 +52,7 @@ export interface InvoicePayload {
   customerName: string;
   phone: string;
   address: string;
-  items: { name: string; quantity: number; price: number }[];
+  items: { name: string; quantity: number; price: number; sku?: string }[];
   total: number;
 }
 
