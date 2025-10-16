@@ -116,46 +116,35 @@ export const confirmOrder = (orderDetails: OrderDetails): Promise<{ success: boo
 // Sends invoice data to the Google Apps Script endpoint
 export async function sendInvoiceToGoogleScript(order: InvoicePayload) {
   try {
+    // ✅ نضيف الـ SKU داخل كل منتج قبل الإرسال
+    const orderWithSKU = {
+      ...order,
+      items: order.items.map(item => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+        sku: (item.sku || item.SKU || item.id || 'N/A') // دعم مختلف الصيغ
+      }))
+    };
+
     await fetch(
       "https://script.google.com/macros/s/AKfycbyvRgj_brOUjCBgU6YL6lQKvJmPog2DeazFwNxgEGcs6YvQRe5HWzOUN3_oGYgnrbNQlw/exec",
       {
         method: "POST",
-        // This is the key change. 'no-cors' allows sending the request without
-        // being blocked by browser security (CORS), but it means we cannot read the response.
-        // This is a "fire-and-forget" approach.
-        mode: 'no-cors',
-        body: JSON.stringify({ order }),
+        mode: "no-cors",
+        body: JSON.stringify({ order: orderWithSKU }),
       }
     );
 
-    // With 'no-cors', we cannot read the response. We fire-and-forget and assume success on the client.
-    // The actual success/failure confirmation must be handled by the script itself (e.g., sending the confirmation email).
-    console.log("✅ Invoice data sent to Google Apps Script. The script will handle processing and confirmation.");
+    console.log("✅ Invoice data (with SKU) sent to Google Apps Script.");
     alert("تم إرسال بيانات الفاتورة بنجاح. سيتم إرسال الفاتورة عبر البريد الإلكتروني.");
 
   } catch (error) {
-    // This will now only catch genuine network errors (e.g., no internet), not CORS errors.
     console.error("🚨 Network error:", error);
     alert("⚠️ فشل الاتصال. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.");
   }
 }
 
-
-// Simulates sending an invoice via email
-export const sendInvoiceByEmail = (order: ConfirmedOrder, recipientEmail: string): Promise<{ success: boolean; message: string }> => {
-  console.log('Mock API: Sending invoice by email to:', recipientEmail, 'for order:', order);
-  return new Promise((resolve, reject) => {
-    // Basic email validation
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipientEmail)) {
-      setTimeout(() => reject({ success: false, message: 'عنوان البريد الإلكتروني غير صالح.' }), 500);
-      return;
-    }
-    setTimeout(() => {
-      console.log(`Mock API: Email sent to ${recipientEmail} for order ${order.id}.`);
-      resolve({ success: true, message: 'تم إرسال الفاتورة بنجاح!' });
-    }, 1500); // 1.5-second delay
-  });
-};
 
 // Simulates fetching past orders
 export const fetchOrderHistory = (): Promise<ConfirmedOrder[]> => {
