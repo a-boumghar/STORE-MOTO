@@ -1,11 +1,7 @@
 
 import React from 'react';
 
-interface HeaderProps {
-    onLogout: () => void;
-}
-
-const Header: React.FC<HeaderProps> = ({ onLogout }) => {
+const Header: React.FC = () => {
   const ktmLogoUrl = 'https://i.ibb.co/XfBfNLv5/all-logo-brand-copy-png.png';
 
   return (
@@ -22,15 +18,8 @@ const Header: React.FC<HeaderProps> = ({ onLogout }) => {
           />
         </div>
         
-        <div className="w-24 flex justify-end">
-          <button
-            onClick={onLogout}
-            className="text-sm text-slate-500 hover:text-red-600 transition-colors"
-            title="تسجيل الخروج"
-          >
-            خروج
-          </button>
-        </div>
+        {/* Empty div to balance the flexbox and keep the logo centered */}
+        <div className="w-24"></div>
       </div>
     </header>
   );

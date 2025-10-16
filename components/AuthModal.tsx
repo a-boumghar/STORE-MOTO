@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 
 // IMPORTANT: Replace this with your actual Google Apps Script deployment URL
-const AUTH_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxvnOFiItr8bcO3TXsUBcaJ0ob9_T7Ip4dFswA0x8ESYzil6rhTELi-hO3lToIalvElKw/exec';
+const AUTH_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwrKUVpmbl682NpC6yx9l9jkyPk60x9SNlW5mhucd09cC452inIox3n6pJ7wOexkUe8Qw/exec';
 
 interface AuthModalProps {
   onSuccess: () => void;

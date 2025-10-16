@@ -175,9 +175,9 @@ function App() {
   
   return (
     <CartContext.Provider value={cartContextValue}>
-      <div className="bg-slate-50 text-slate-800 min-h-screen">
-        <Header onLogout={handleLogout} />
-        <main className="container mx-auto px-4 py-8">
+      <div className="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+        <Header />
+        <main className="container mx-auto px-4 py-8 flex-grow">
           <div className="mb-8 flex flex-col md:flex-row gap-4">
             <input
               type="text"
@@ -209,6 +209,19 @@ function App() {
             <ProductGrid products={filteredProducts} />
           )}
         </main>
+
+        <footer className="bg-slate-100 border-t border-slate-200 py-6">
+            <div className="container mx-auto px-4 text-center text-slate-500 text-sm">
+                <button
+                    onClick={handleLogout}
+                    className="text-sm text-slate-500 hover:text-red-600 transition-colors mb-2"
+                    title="تسجيل الخروج"
+                >
+                    تسجيل الخروج
+                </button>
+                <p>&copy; {new Date().getFullYear()} متجر قطع غيار الدراجات النارية. كل الحقوق محفوظة.</p>
+            </div>
+        </footer>
 
         <FloatingCartButton onClick={() => setIsCartOpen(true)} />
         <CartModal isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
