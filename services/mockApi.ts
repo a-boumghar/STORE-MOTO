@@ -117,7 +117,7 @@ export const confirmOrder = (orderDetails: OrderDetails): Promise<{ success: boo
 export async function sendInvoiceToGoogleScript(order: InvoicePayload) {
   try {
     await fetch(
-      "https://script.google.com/macros/s/AKfycbxO3pvAUmDUUwDq3AOsmftvq2TbWQcups3UDghkFQww2auAD_woTJlMR8MaiHxc1KKqwQ/exec",
+      "https://script.google.com/macros/s/AKfycbwsaQfHUkB4y_GXZ_4ujW3-qFPa7uI-yR5WKFsy0WGrqE5ZZPzI3U7_XZeGP2QRpm-f5g/exec",
       {
         method: "POST",
         // This is the key change. 'no-cors' allows sending the request without
