@@ -99,19 +99,31 @@ export const confirmOrder = (orderDetails: OrderDetails): Promise<{ success: boo
   console.log('Mock API: Confirming order with details:', orderDetails);
   return new Promise(resolve => {
     setTimeout(() => {
-      lastOrderIdCounter++; // Increment the order counter
-      const newOrderId = `FCT-${String(lastOrderIdCounter).padStart(5, '0')}`; // Format to FCT-0000X
+      lastOrderIdCounter++;
+      const newOrderId = `FCT-${String(lastOrderIdCounter).padStart(5, '0')}`;
 
+      // ✅ أضف sku الحقيقي من mockProducts لكل منتج
       const confirmedOrder: ConfirmedOrder = {
         ...orderDetails,
         id: newOrderId,
         date: new Date().toISOString(),
+        items: orderDetails.items.map(item => {
+          const original = mockProducts.find(p => p.name === item.name);
+          return {
+            ...item,
+            sku: original ? original.sku : "غير متوفر"
+          };
+        }),
       };
+
       console.log(`Mock API: Order confirmed with ID ${confirmedOrder.id}, saved to Sheet.`);
+      console.log("✅ Items with SKU:", confirmedOrder.items); // تحقق في الـ console من وجود sku
+
       resolve({ success: true, message: 'تم تأكيد طلبك بنجاح!', order: confirmedOrder });
-    }, 1500); // 1.5-second delay
+    }, 1500);
   });
 };
+
 
 // Sends invoice data to the Google Apps Script endpoint
 export async function sendInvoiceToGoogleScript(order: InvoicePayload) {
