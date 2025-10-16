@@ -6,6 +6,7 @@ import Header from './components/Header';
 import ProductGrid from './components/ProductGrid';
 import CartModal from './components/CartModal';
 import FloatingCartButton from './components/FloatingCartButton';
+import AuthModal from './components/AuthModal'; // Import the new component
 
 export const CartContext = React.createContext<{
   cartItems: CartItem[];
@@ -16,8 +17,42 @@ export const CartContext = React.createContext<{
   cartTotal: number;
 } | null>(null);
 
+const AUTH_KEY = 'motorino_auth_token';
 
 function App() {
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+
+  // Check for auth token on initial load
+  useEffect(() => {
+    try {
+      const storedToken = localStorage.getItem(AUTH_KEY);
+      if (storedToken) {
+        const { expiry } = JSON.parse(storedToken);
+        if (new Date().getTime() < expiry) {
+          setIsAuthorized(true);
+        } else {
+          localStorage.removeItem(AUTH_KEY); // Token expired
+        }
+      }
+    } catch (error) {
+      console.error("Failed to parse auth token from localStorage", error);
+      localStorage.removeItem(AUTH_KEY);
+    }
+    setIsAuthLoading(false);
+  }, []);
+
+  const handleLoginSuccess = () => {
+    const expiry = new Date().getTime() + 30 * 24 * 60 * 60 * 1000; // 30 days
+    localStorage.setItem(AUTH_KEY, JSON.stringify({ authorized: true, expiry }));
+    setIsAuthorized(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem(AUTH_KEY);
+    setIsAuthorized(false);
+  };
+  
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
@@ -47,6 +82,8 @@ function App() {
   }, [cartItems]);
 
   useEffect(() => {
+    if (!isAuthorized) return; // Don't fetch products if not authorized
+    
     const loadProducts = async () => {
       setIsLoading(true);
       try {
@@ -65,7 +102,7 @@ function App() {
       }
     };
     loadProducts();
-  }, []);
+  }, [isAuthorized]); // Re-run when authorization status changes
 
   useEffect(() => {
     let result = products;
@@ -123,11 +160,23 @@ function App() {
     clearCart,
     cartTotal
   };
+
+  if (isAuthLoading) {
+    return (
+      <div className="bg-slate-50 min-h-screen flex justify-center items-center">
+        <div className="text-xl">جاري التحقق من الدخول...</div>
+      </div>
+    );
+  }
+
+  if (!isAuthorized) {
+    return <AuthModal onSuccess={handleLoginSuccess} />;
+  }
   
   return (
     <CartContext.Provider value={cartContextValue}>
       <div className="bg-slate-50 text-slate-800 min-h-screen">
-        <Header />
+        <Header onLogout={handleLogout} />
         <main className="container mx-auto px-4 py-8">
           <div className="mb-8 flex flex-col md:flex-row gap-4">
             <input
