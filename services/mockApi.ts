@@ -138,7 +138,7 @@ export async function sendInvoiceToGoogleScript(order: InvoicePayload) {
     };
 
     await fetch(
-      "https://script.google.com/macros/s/AKfycby7TrerXo1LVise4loutBEKtQCX5XgFS-hw8lcn2r7BUH8iD3Hgss6oCQr4NguPBi4UbQ/exec",
+      "https://script.google.com/macros/s/AKfycbw8tSvg2S1nyMSifcS4nBIBdw51kytcYjRbAOZQ7alTQfIqRgAX76g8p7BpScR3Q2vYnw/exec",
       {
         method: "POST",
         mode: "no-cors",
