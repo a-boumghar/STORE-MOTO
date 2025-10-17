@@ -108,10 +108,10 @@ export const confirmOrder = (orderDetails: OrderDetails): Promise<{ success: boo
         id: newOrderId,
         date: new Date().toISOString(),
         items: orderDetails.items.map(item => {
-          const original = mockProducts.find(p => p.name === item.name);
+          const original = mockProducts.find(p => p.id === item.id);
           return {
             ...item,
-            sku: original ? original.sku : "غير متوفر"
+            sku: original?.sku || "غير متوفر"
           };
         }),
       };
