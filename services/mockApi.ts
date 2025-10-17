@@ -102,18 +102,15 @@ export const confirmOrder = (orderDetails: OrderDetails): Promise<{ success: boo
       lastOrderIdCounter++;
       const newOrderId = `FCT-${String(lastOrderIdCounter).padStart(5, '0')}`;
 
-      // ✅ أضف sku الحقيقي من mockProducts لكل منتج
+      // ✅ Use the real SKU from the cart item, not from the static mockProducts list.
       const confirmedOrder: ConfirmedOrder = {
         ...orderDetails,
         id: newOrderId,
         date: new Date().toISOString(),
-        items: orderDetails.items.map(item => {
-          const original = mockProducts.find(p => p.id === item.id);
-          return {
-            ...item,
-            sku: original?.sku || "غير متوفر"
-          };
-        }),
+        items: orderDetails.items.map(item => ({
+          ...item,
+          sku: item.sku || "غير متوفر" // Use SKU from the cart item which has the real data.
+        })),
       };
 
       console.log(`Mock API: Order confirmed with ID ${confirmedOrder.id}, saved to Sheet.`);
