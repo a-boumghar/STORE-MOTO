@@ -37,47 +37,47 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
   return (
     <div className="bg-white rounded-lg overflow-hidden border border-slate-200 shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-slate-200 group flex flex-col">
       <img src={product.image} alt={product.name} className="w-full aspect-square object-cover" />
-      <div className="p-4 flex flex-col flex-grow">
-        <h3 className="text-lg font-bold text-slate-800">{product.name}</h3>
+      <div className="p-2 md:p-4 flex flex-col flex-grow">
+        <h3 className="text-sm md:text-lg font-bold text-slate-800 line-clamp-2 min-h-[2.5em]">{product.name}</h3>
         {product.piecesPerCarton && (
-          <p className="text-sm text-sky-600 mt-1">
+          <p className="text-[10px] md:text-sm text-sky-600 mt-1">
             (كرتون : {product.piecesPerCarton} قطعة)
           </p>
         )}
         {product.sku && (
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-[10px] md:text-xs text-slate-500 mt-1 truncate">
             (SKU : {product.sku})
           </p>
         )}
-        <p className="text-sm text-slate-500 mb-4">{product.category}</p>
+        <p className="text-xs md:text-sm text-slate-500 mb-2 md:mb-4 truncate">{product.category}</p>
         
-        <div className="mt-auto pt-4 border-t border-slate-200/80">
-          <div className="flex justify-between items-center mb-3">
-              <p className="text-sm text-slate-600">السعر:</p>
-              <p className="text-xl font-black text-red-600">{
+        <div className="mt-auto pt-2 md:pt-4 border-t border-slate-200/80">
+          <div className="flex justify-between items-center mb-2 md:mb-3">
+              <p className="text-xs md:text-sm text-slate-600">السعر:</p>
+              <p className="text-lg md:text-xl font-black text-red-600">{
                 product.price.toLocaleString('ar-EG', { 
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                   numberingSystem: 'latn' 
                 } as any)
-              } <span className="text-sm">درهم</span></p>
+              } <span className="text-xs md:text-sm">درهم</span></p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 md:gap-2">
             <input 
               type="number"
               value={quantity}
               onChange={handleQuantityChange}
               min="1"
               placeholder="كمية"
-              className="w-[70%] bg-slate-100 border border-slate-300 text-slate-900 rounded-md text-center py-2 focus:outline-none focus:ring-2 focus:ring-red-600"
+              className="w-[65%] md:w-[70%] bg-slate-100 border border-slate-300 text-slate-900 rounded-md text-center py-1 md:py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-600"
               aria-label="الكمية"
             />
             <button
               onClick={handleAddToCart}
-              className="w-[30%] bg-red-600 text-white font-bold py-2 px-3 rounded-lg flex items-center justify-center gap-2 transform transition-transform duration-200 group-hover:bg-red-500 active:scale-95"
+              className="w-[35%] md:w-[30%] bg-red-600 text-white font-bold py-1 md:py-2 px-2 md:px-3 rounded-lg flex items-center justify-center gap-1 md:gap-2 transform transition-transform duration-200 group-hover:bg-red-500 active:scale-95"
             >
-              <PlusIcon />
-              <span>أضف</span>
+              <PlusIcon className="w-4 h-4 md:w-5 md:h-5" />
+              <span className="hidden sm:inline text-sm">أضف</span>
             </button>
           </div>
         </div>
@@ -92,7 +92,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
   }
   
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
       {products.map(product => (
         <ProductCard key={product.id} product={product} />
       ))}
