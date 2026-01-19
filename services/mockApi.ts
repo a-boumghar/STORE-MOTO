@@ -1,3 +1,4 @@
+
 import { Product, OrderDetails, CartItem, ConfirmedOrder } from '../types';
 
 const mockProducts: Product[] = [
@@ -43,10 +44,8 @@ const mockPastOrders: ConfirmedOrder[] = [
     }
 ];
 
-// This simulates a database sequence. It starts after the existing mock orders.
 let lastOrderIdCounter = mockPastOrders.length;
 
-// This type matches the sanitized order payload for the invoice script
 export interface InvoicePayload {
   id: string;
   customerName: string;
@@ -56,27 +55,13 @@ export interface InvoicePayload {
   total: number;
 }
 
-
-// Fetches products from a Google Sheet Web App
 export const fetchProducts = async (): Promise<Product[]> => {
   const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwQp95Xkwvzlu1a4NQpmPU5YO91m0IN0xLv1Ue_SVpKajbgm87ilInmAzZbdOMNn9i2/exec';
-
-  console.log('API: Fetching products from Google Sheet...');
-  
   try {
     const response = await fetch(GOOGLE_SHEET_API_URL);
-    if (!response.ok) {
-      throw new Error(`Network response was not ok: ${response.statusText}`);
-    }
+    if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
     const data = await response.json();
-    console.log('API: Products fetched successfully.');
-    
-    // Ensure data is an array and fields have correct types, as Google Sheets can be inconsistent.
-    if (!Array.isArray(data)) {
-        console.error("API Error: Expected an array of products but received:", data);
-        return [];
-    }
-
+    if (!Array.isArray(data)) return [];
     return data.map((p: any) => ({
         id: Number(p.id),
         name: String(p.name || ''),
@@ -85,58 +70,71 @@ export const fetchProducts = async (): Promise<Product[]> => {
         category: String(p.category || 'غير مصنف'),
         piecesPerCarton: p.piecesPerCarton ? Number(p.piecesPerCarton) : undefined,
         sku: p.sku ? String(p.sku) : undefined,
-    })).filter(p => p.id && p.name && p.price > 0); // Filter out any invalid or empty rows from the sheet
+    })).filter(p => p.id && p.name && p.price > 0);
   } catch (error) {
     console.error("Error fetching products from Google Sheet:", error);
-    // Fallback to an empty array to prevent the app from crashing.
     return []; 
   }
 };
 
+/**
+ * Fetches a promotional image URL from a published Google Sheet CSV.
+ * It assumes Column A contains the image URL and returns the first row's value.
+ */
+export const fetchPromoImage = async (): Promise<string | null> => {
+    // Note: User must publish their sheet to the web as CSV
+    // Example format: https://docs.google.com/spreadsheets/d/ID/pub?output=csv
+    // Replace with your actual published CSV link.
+    const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSQvYt7y-M8YvB_G_h5P5Z-8W9G3_Lp-qW6K4O8Y4H5G3_Lp-qW6K4O8Y4H/pub?output=csv';
+    
+    try {
+        const response = await fetch(SHEET_CSV_URL);
+        const text = await response.text();
+        const rows = text.split('\n');
+        if (rows.length > 0) {
+            const firstRow = rows[0].split(',');
+            const imageUrl = firstRow[0].trim();
+            // Validate if it's a URL
+            if (imageUrl.startsWith('http')) return imageUrl;
+        }
+        return null;
+    } catch (error) {
+        console.error("Error fetching promo image from Google Sheet:", error);
+        // Fallback to a default promo image or null
+        return 'https://picsum.photos/seed/promo/800/800'; 
+    }
+};
 
-// Simulates confirming an order and saving to a sheet.
 export const confirmOrder = (orderDetails: OrderDetails): Promise<{ success: boolean; message: string; order: ConfirmedOrder }> => {
-  console.log('Mock API: Confirming order with details:', orderDetails);
   return new Promise(resolve => {
     setTimeout(() => {
       lastOrderIdCounter++;
       const newOrderId = `FCT-${String(lastOrderIdCounter).padStart(5, '0')}`;
-
-      // ✅ Use the real SKU from the cart item, not from the static mockProducts list.
       const confirmedOrder: ConfirmedOrder = {
         ...orderDetails,
         id: newOrderId,
         date: new Date().toISOString(),
         items: orderDetails.items.map(item => ({
           ...item,
-          sku: item.sku || "غير متوفر" // Use SKU from the cart item which has the real data.
+          sku: item.sku || "غير متوفر"
         })),
       };
-
-      console.log(`Mock API: Order confirmed with ID ${confirmedOrder.id}, saved to Sheet.`);
-      console.log("✅ Items with SKU:", confirmedOrder.items); // تحقق في الـ console من وجود sku
-
       resolve({ success: true, message: 'تم تأكيد طلبك بنجاح!', order: confirmedOrder });
     }, 1500);
   });
 };
 
-
-// Sends invoice data to the Google Apps Script endpoint
 export async function sendInvoiceToGoogleScript(order: InvoicePayload) {
   try {
-    // ✅ نضيف الـ SKU داخل كل منتج قبل الإرسال
     const orderWithSKU = {
       ...order,
       items: order.items.map(item => ({
         name: item.name,
         quantity: item.quantity,
         price: item.price,
-        // FIX: Corrected property access to only use `item.sku` as `item.SKU` and `item.id` do not exist on the type.
         sku: item.sku || 'N/A'
       }))
     };
-
     await fetch(
       "https://script.google.com/macros/s/AKfycbz2bZFlzcVn5oZxXDyPNrs5GRzmAAZU8M9gXXVTZnOFbMqKoJsMd4NWQ9XdjTZZgBWOgg/exec",
       {
@@ -145,44 +143,15 @@ export async function sendInvoiceToGoogleScript(order: InvoicePayload) {
         body: JSON.stringify({ order: orderWithSKU }),
       }
     );
-
-    console.log("✅ Invoice data (with SKU) sent to Google Apps Script.");
-    alert("تم إرسال بيانات الفاتورة بنجاح. سيتم إرسال الفاتورة عبر البريد الإلكتروني.");
-
   } catch (error) {
-    console.error("🚨 Network error:", error);
-    alert("⚠️ فشل الاتصال. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.");
+    console.error("🚨 Network error sending invoice:", error);
   }
 }
 
-
-// Simulates fetching past orders
 export const fetchOrderHistory = (): Promise<ConfirmedOrder[]> => {
-  console.log('Mock API: Fetching order history...');
   return new Promise(resolve => {
     setTimeout(() => {
-      console.log('Mock API: Order history fetched successfully.');
       resolve(mockPastOrders);
     }, 800);
   });
 };
-
-/*
-// Example usage for sendInvoiceToGoogleScript:
-
-const exampleOrder: InvoicePayload = {
-  id: "2031",
-  customerName: "Abdellah Boumghar",
-  phone: "+212612345678",
-  address: "Casablanca, Morocco",
-  items: [
-    { name: "Helmet", quantity: 1, price: 350 },
-    { name: "Motor Oil", quantity: 2, price: 120 },
-  ],
-  total: 590,
-};
-
-// This function is called from the CartModal component upon order confirmation.
-// sendInvoiceToGoogleScript(exampleOrder);
-
-*/

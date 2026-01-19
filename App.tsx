@@ -6,7 +6,8 @@ import Header from './components/Header';
 import ProductGrid from './components/ProductGrid';
 import CartModal from './components/CartModal';
 import FloatingCartButton from './components/FloatingCartButton';
-import AuthModal from './components/AuthModal'; // Import the new component
+import AuthModal from './components/AuthModal';
+import PromoPopup from './components/PromoPopup';
 
 export const CartContext = React.createContext<{
   cartItems: CartItem[];
@@ -23,7 +24,6 @@ function App() {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
-  // Check for auth token on initial load
   useEffect(() => {
     try {
       const storedToken = localStorage.getItem(AUTH_KEY);
@@ -32,7 +32,7 @@ function App() {
         if (new Date().getTime() < expiry) {
           setIsAuthorized(true);
         } else {
-          localStorage.removeItem(AUTH_KEY); // Token expired
+          localStorage.removeItem(AUTH_KEY);
         }
       }
     } catch (error) {
@@ -43,7 +43,7 @@ function App() {
   }, []);
 
   const handleLoginSuccess = () => {
-    const expiry = new Date().getTime() + 30 * 24 * 60 * 60 * 1000; // 30 days
+    const expiry = new Date().getTime() + 30 * 24 * 60 * 60 * 1000;
     localStorage.setItem(AUTH_KEY, JSON.stringify({ authorized: true, expiry }));
     setIsAuthorized(true);
   };
@@ -61,7 +61,6 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isCartOpen, setIsCartOpen] = useState(false);
   
-  // Initialize cart from localStorage
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
     try {
       const savedCart = localStorage.getItem('motorino-cart');
@@ -72,7 +71,6 @@ function App() {
     }
   });
 
-  // Persist cart to localStorage on change
   useEffect(() => {
     try {
       localStorage.setItem('motorino-cart', JSON.stringify(cartItems));
@@ -82,13 +80,11 @@ function App() {
   }, [cartItems]);
 
   useEffect(() => {
-    if (!isAuthorized) return; // Don't fetch products if not authorized
+    if (!isAuthorized) return;
     
     const loadProducts = async () => {
       setIsLoading(true);
       try {
-        // In a real application, this would be:
-        // google.script.run.withSuccessHandler((data) => { ... }).getProducts();
         const fetchedProducts = await mockFetchProducts();
         setProducts(fetchedProducts);
         setFilteredProducts(fetchedProducts);
@@ -96,13 +92,12 @@ function App() {
         setCategories(uniqueCategories);
       } catch (error) {
         console.error("Failed to fetch products:", error);
-        // Handle error display to the user
       } finally {
         setIsLoading(false);
       }
     };
     loadProducts();
-  }, [isAuthorized]); // Re-run when authorization status changes
+  }, [isAuthorized]);
 
   useEffect(() => {
     let result = products;
@@ -175,7 +170,7 @@ function App() {
   
   return (
     <CartContext.Provider value={cartContextValue}>
-      <div className="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+      <div className="bg-slate-50 text-slate-800 min-h-screen flex flex-col relative">
         <Header />
         <main className="container mx-auto px-4 py-8 flex-grow">
           <div className="mb-8 flex flex-col md:flex-row gap-4">
@@ -225,6 +220,9 @@ function App() {
 
         <FloatingCartButton onClick={() => setIsCartOpen(true)} />
         <CartModal isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+        
+        {/* New Promo Component */}
+        <PromoPopup />
       </div>
     </CartContext.Provider>
   );
